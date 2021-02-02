@@ -19,7 +19,7 @@ int main()
     // opt represents operation 
     // opr represents operand 
     // label represents label 
-    // LOCCTR represents Location counter
+    // LOCCTR represents location counter value
     // ERROR_FLAG will be 1 if any symbol occurred more than one time
     // fi is file pointer for intermediate file
     // fo is file pointer for symbol table file
@@ -73,6 +73,7 @@ int main()
         		continue;
         	}
 
+            // intervals is used to find whether current line contains opcode, operand, label or not
             intervals = find_number_of_columns(line);
             temp = LOCCTR;
             add_trailing_spaces(temp);
@@ -114,7 +115,7 @@ int main()
                         }
                     }
                     if(ERROR_FLAG){
-                        cout<<"Error since symbol " << label << "occurred more than 1 time" << '\n';
+                        cout<<"ERROR SINCE SOME SYMBOL " << label << "OCCURRED MORE THAN ONE TIME" << '\n';
                     }
                     else {
                     	temp = LOCCTR;

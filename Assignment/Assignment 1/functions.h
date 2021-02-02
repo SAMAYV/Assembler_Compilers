@@ -29,28 +29,14 @@ void add_trailing_spaces(string& a){
         a.push_back(' ');
     }
 }
-
-map<char,int> hex_value_of_dec(void)
-{     
-    // Map the values to decimal values 
-    map<char, int> m {{ '0', 0 }, { '1', 1 }, { '2', 2 }, { '3', 3 }, { '4', 4 }, { '5', 5 }, { '6', 6 }, { '7', 7 },  
-                      { '8', 8 }, { '9', 9 }, { 'A', 10 }, { 'B', 11 }, { 'C', 12 }, { 'D', 13 }, { 'E', 14 }, { 'F', 15 } }; 
-    return m; 
-} 
-
-map<int, char> dec_value_of_hex(void) 
-{ 
-    // Map the values to the hexadecimal values 
-    map<int, char> m {{ 0, '0' }, { 1, '1' }, { 2, '2' }, { 3, '3' }, { 4, '4' }, { 5, '5' }, { 6, '6' }, { 7, '7' },  
-                      { 8, '8' }, { 9, '9' }, { 10, 'A' }, { 11, 'B' }, { 12, 'C' }, { 13, 'D' }, { 14, 'E' }, { 15, 'F' } }; 
-    return m; 
-} 
   
 // Function to add the two hexadecimal numbers 
 string Add_Hex(string a, string b) 
 { 
-    map<char,int> m = hex_value_of_dec(); 
-    map<int,char> k = dec_value_of_hex(); 
+    map<char,int> m = {{ '0', 0 }, { '1', 1 }, { '2', 2 }, { '3', 3 }, { '4', 4 }, { '5', 5 }, { '6', 6 }, { '7', 7 },  
+                        { '8', 8 }, { '9', 9 }, { 'A', 10 }, { 'B', 11 }, { 'C', 12 }, { 'D', 13 }, { 'E', 14 }, { 'F', 15 } }; 
+    map<int,char> k = {{ 0, '0' }, { 1, '1' }, { 2, '2' }, { 3, '3' }, { 4, '4' }, { 5, '5' }, { 6, '6' }, { 7, '7' },  
+                        { 8, '8' }, { 9, '9' }, { 10, 'A' }, { 11, 'B' }, { 12, 'C' }, { 13, 'D' }, { 14, 'E' }, { 15, 'F' } }; 
    
     if(a.length() < b.length()){
         swap(a, b);
@@ -83,7 +69,8 @@ string Add_Hex(string a, string b)
     reverse(ans.begin(), ans.end()); 
     return ans; 
 } 
-  
+
+// function to convert decimal to hexadecimal
 string decToHexa(int n) 
 {     
     string hexaDeciNum;  
@@ -104,23 +91,20 @@ string decToHexa(int n)
     return hexaDeciNum;
 } 
 
+// function to convert hexadecimal to decimal
 int hexadecimalToDecimal(string hexVal) 
 {    
-    int len = hexVal.size(); 
-      
-    // Initializing base value to 1, i.e 16^0 
+    int len = hexVal.size();  
     int base = 1;  
     int dec_val = 0; 
       
     // Extracting characters as digits from last character 
     for(int i=len-1; i>=0; i--) 
-    {    
-        // if character lies in '0'-'9', converting it to integral 0-9 by subtracting 48 from ASCII value. 
+    {     
         if(hexVal[i] >= '0' && hexVal[i] <= '9'){ 
             dec_val += (hexVal[i] - 48)*base; 
             base = base * 16; 
-        } 
-        // if character lies in 'A'-'F' , converting it to integral 10 - 15 by subtracting 55 from ASCII value 
+        }  
         else if(hexVal[i] >= 'A' && hexVal[i] <= 'F'){ 
             dec_val += (hexVal[i] - 55)*base; 
             base = base*16; 
@@ -130,6 +114,7 @@ int hexadecimalToDecimal(string hexVal)
     return dec_val; 
 } 
 
+// subtract 2 hexadecimal values
 string subtract(string a,string b){
     int v = hexadecimalToDecimal(a) - hexadecimalToDecimal(b);
     return decToHexa(v);
