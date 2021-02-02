@@ -14,9 +14,9 @@
 # Instructions for running the code:
 
 	1. First generate intermediate code and symbol table which will be used in generating object code. Use the command:
-		$ g++ pass1.cpp
-		$ ./a.out
+		$ g++ -o pass1 pass1.cpp
+		$ ./pass1
 
 	2. To get object code use the command:
-		$ g++ pass2.cpp
-		$ ./a.out 																															
+		$ g++ -o pass2 pass2.cpp
+		$ ./pass2 																															
