@@ -17,3 +17,10 @@ JLT  	38
 STX  	10		
 LDCH 	50		
 WD   	DC		
+ADD		18		
+SUB		1C		
+MUL		20		
+DIV		24		
+JGT		34		
+AND		40		
+OR		44		

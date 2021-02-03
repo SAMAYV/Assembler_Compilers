@@ -1,6 +1,12 @@
+/*  
+    This Program should be compiled and executed in LINUX g++ environment 
+    g++ -o Pass1 180101097_Assign01_Pass1.cpp 
+    ./Pass1 
+*/
+
 #include <bits/stdc++.h>
 #include <fstream>
-#include "functions.h"
+#include "180101097_Assign01_Functions.h"
 
 using namespace std;
 

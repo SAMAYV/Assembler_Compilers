@@ -13,10 +13,12 @@
 
 # Instructions for running the code:
 
-	1. First generate intermediate code and symbol table which will be used in generating object code. Use the command:
-		$ g++ -o pass1 pass1.cpp
-		$ ./pass1
+	1. Both the cpp files should be compiled and executed in LINUX g++ environment 
 
-	2. To get object code use the command:
-		$ g++ -o pass2 pass2.cpp
-		$ ./pass2 																															
+	2. First generate intermediate code and symbol table which will be used in generating object code. Use the command:
+		$ g++ -o Pass1 180101097_Assign01_Pass1.cpp
+		$ ./Pass1
+
+	3. To get object code use the command:
+		$ g++ -o Pass2 180101097_Assign01_Pass2.cpp
+		$ ./Pass2 																															
