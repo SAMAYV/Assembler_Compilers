@@ -1,24 +1,23 @@
 /* 	
 	This Program should be compiled and executed in LINUX g++ environment 
-	g++ -o Pass2 180101097_Assign01_Pass2.cpp 
+	g++ -o Pass2 180101097_Assign02_Pass2.cpp 
 	./Pass2 
 */
 
 #include <bits/stdc++.h>
 #include <fstream>
-#include "180101097_Assign01_Functions.h"
+#include "180101097_Assign02_Functions.h"
 
 using namespace std;
 
 int main()
 {
-	fstream fp,fi,fo,ff,f;
+	fstream fp,fi,fo,ff;
 	string counter1, curr_addr, start_addr, curr_opt, curr_label, obj_code, ctr, prog_start, prog_size, line, addr, addr1, label, opt, opr, opt1, opvalue, p;
 	int counter, d, size, a, b, start, j, l, k, intervals, i, temp, n;
 
 	fp.open("intermediate.txt",ios::in);
     ff.open("object.txt",ios::out);
-    f.open("debug.txt",ios::out);
 
     // opt represents operation/opcode 
     // opr represents operand 
@@ -211,10 +210,11 @@ int main()
 
         // FOR TEXT RECORD---------------------------------------------------------------------------------
 
+        vector<vector<string>> modification;
+
         while(!fp.eof())
         {
         	a = fp.tellg();
-            f << a << "\n";
         	getline(fp,line);
             
 			// means that line is a comment line
@@ -299,6 +299,53 @@ int main()
         		remove_trailing_spaces(opr);
         		remove_trailing_spaces(obj_code);
 
+                // Modification record calculation
+                vector<string> v;
+                string str;
+                for(int z = 0; z < opr.size(); z++){
+                    if(opr[z] == '-' || opr[z] == '+' || opr[z] == ','){
+                        if(ext_ref.count(str.substr(1))){
+                            v.push_back(str);
+                        }
+                        else if(ext_ref.count(str)){
+                            v.push_back("+" + str);
+                        }
+                        str = "";
+                    }
+                    str.push_back(opr[z]);
+                }
+                if(str.size()){
+                    if(ext_ref.count(str.substr(1))){
+                        v.push_back(str);
+                    }
+                    else if(ext_ref.count(str)){
+                        v.push_back("+" + str);
+                    }
+                }
+                int c = 0;
+                for(int z = obj_code.size()-1; z >= 0; z--){
+                    if(obj_code[z] != '0'){
+                        break;
+                    }
+                    else {
+                        c++;
+                    }
+                }
+                int k = hexadecimalToDecimal(addr) + (obj_code.size() - c)/2;
+
+                string p1 = decToHexa(c);
+                while(p1.size() < 2){
+                    p1 = "0" + p1;
+                }
+                string p2 = decToHexa(k);
+                while(p2.size() < 6){
+                    p2 = "0" + p2;
+                }
+                for(string it : v){
+                    modification.push_back({p2, p1, it});
+                }
+
+                // increasing j
         		j += obj_code.size()/2;
         		if(obj_code.size()){
         			ff << "^" << obj_code;
@@ -327,6 +374,14 @@ int main()
                     fp.seekg(a,ios::beg);
                     break;
                 }
+            }
+        }
+
+        // FOR MODIFICATION RECORD
+        for(vector<string> v : modification){
+            ff << "\nM";
+            for(string p : v){
+                ff << "^" << p;
             }
         }
 
