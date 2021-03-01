@@ -41,6 +41,9 @@ string Add_Hex(string a, string b)
     if(a.length() < b.length()){
         swap(a, b);
     }  
+    if(!b.size()){
+        return a;
+    }
     int l1 = a.size(), l2 = b.size(); 
     string ans = ""; 
   

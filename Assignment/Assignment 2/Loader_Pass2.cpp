@@ -83,8 +83,7 @@ int main()
 
 				string x = subtract(textloc,loc);
 				int p = hexadecimalToDecimal(x);
-				// cout << x << " " << p << endl;
-				for(i = 0; i < p; i+=16)
+				for(i = 0; i < p; i++)
 				{
 					obcode[inc].code = "..";
 					obcode[inc++].add = start;
@@ -95,7 +94,7 @@ int main()
 
 				for(int j = 3; j < vtr.size(); j++){
 					for(int k = 0; k < vtr[j].size()-1; k+=2){
-						obcode[inc].code = vtr[j][k] + vtr[j][k+1];
+						obcode[inc].code = vtr[j].substr(k,2);
 						obcode[inc++].add = start;
 						start = Add_Hex(start,"1");
 					}
@@ -154,6 +153,9 @@ int main()
 				newadd = subtract(address,estab[i].address);
 				break;
 		}
+		while(newadd.size() < length){
+			newadd = "0" + newadd;
+		}
   		x = 0; 
   		y = 0;
   		while(count > 0)
@@ -167,10 +169,16 @@ int main()
    			}
   		}
   	}
+  	for(i = 0; i < inc; i++){
+  		cout << obcode[i].code << " " << obcode[i].add << endl;
+  	}
  	
  	count = 0;
  	n = 0;
  	s = subtract(st,"10");
+ 	while(s.size() < 6){
+ 		s = "0" + s;
+ 	}
  	fp3 << s << "\t";
  	for(i = 1; i <= 16; i++)
  	{
