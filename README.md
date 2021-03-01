@@ -1,1 +1,1 @@
-- This repository contains the assignments given in the course CS348 in 2021
+- This repository contains the assignments given in the course CS348 in Semester 6
