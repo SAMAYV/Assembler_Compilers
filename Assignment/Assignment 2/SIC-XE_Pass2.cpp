@@ -393,6 +393,7 @@ int main()
 			ff << "\n";
         }
 	}
+    ff << "END";
 	fp.close();
 	ff.close();
 	return 0;

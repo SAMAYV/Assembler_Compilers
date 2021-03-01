@@ -1,1 +1,1 @@
-# Introduction to Programming Languages Lab
+- This repository contains the assignments given in the course CS348 in 2021
