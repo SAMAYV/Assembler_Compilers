@@ -169,9 +169,6 @@ int main()
    			}
   		}
   	}
-  	for(i = 0; i < inc; i++){
-  		cout << obcode[i].code << " " << obcode[i].add << endl;
-  	}
  	
  	count = 0;
  	n = 0;

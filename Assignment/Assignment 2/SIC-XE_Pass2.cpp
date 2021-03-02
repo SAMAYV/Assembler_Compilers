@@ -57,8 +57,8 @@ int main()
         addr = line.substr(0,10);
         label = line.substr(10,10);
         opt = line.substr(20,10);
-        opr = line.substr(30,20);
-        obj_code = line.substr(50,10);
+        opr = line.substr(30,30);
+        obj_code = line.substr(60,10);
 
         remove_trailing_spaces(addr);
         remove_trailing_spaces(label);
@@ -86,7 +86,7 @@ int main()
                 if(line.size() != 0 && line[0] != '.'){
                     curr_addr = line.substr(0,10);
                     curr_opt = line.substr(20,10);
-                    string curr_obj_code = line.substr(50,10);
+                    string curr_obj_code = line.substr(60,10);
                     remove_trailing_spaces(curr_opt);
                     remove_trailing_spaces(curr_addr);
                     remove_trailing_spaces(curr_obj_code);
@@ -112,8 +112,8 @@ int main()
         addr = line.substr(0,10);
         label = line.substr(10,10);
         opt = line.substr(20,10);
-        opr = line.substr(30,20);
-        obj_code = line.substr(50,10);
+        opr = line.substr(30,30);
+        obj_code = line.substr(60,10);
 
         remove_trailing_spaces(addr);
         remove_trailing_spaces(label);
@@ -172,8 +172,8 @@ int main()
         addr = line.substr(0,10);
         label = line.substr(10,10);
         opt = line.substr(20,10);
-        opr = line.substr(30,20);
-        obj_code = line.substr(50,10);
+        opr = line.substr(30,30);
+        obj_code = line.substr(60,10);
 
         remove_trailing_spaces(addr);
         remove_trailing_spaces(label);
@@ -251,7 +251,7 @@ int main()
                 
                 addr = line.substr(0,10);
                 opt = line.substr(20,10);
-                obj_code = line.substr(50,10);
+                obj_code = line.substr(60,10);
 
                 remove_trailing_spaces(addr);
                 remove_trailing_spaces(opt);
@@ -293,8 +293,8 @@ int main()
                 addr = line.substr(0,10);
                 label = line.substr(10,10);
                 opt = line.substr(20,10);
-                opr = line.substr(30,20);
-                obj_code = line.substr(50,10);
+                opr = line.substr(30,30);
+                obj_code = line.substr(60,10);
 
                 remove_trailing_spaces(addr);
                 remove_trailing_spaces(label);
@@ -365,7 +365,7 @@ int main()
                 addr = line.substr(0,10);
                 label = line.substr(10,10);
                 opt = line.substr(20,10);
-                opr = line.substr(30,10);
+                opr = line.substr(30,30);
                 remove_trailing_spaces(addr);
                 remove_trailing_spaces(opt);
                 remove_trailing_spaces(label);
