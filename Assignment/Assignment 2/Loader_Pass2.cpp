@@ -20,7 +20,7 @@ struct objectcode {
 
 int main()
 {
-	exttable estab[20];
+	exttable estab[2000];
  	objectcode obcode[50000];
 
  	fstream fp1,fp2,fp3;
@@ -28,10 +28,10 @@ int main()
  	fp2.open("estab.txt",ios::in);
  	fp3.open("output.txt",ios::out);
 
- 	string pstart, label[50], exeloc, loc, start, st, input, mloc[30], textloc, textlen, lbl, newadd, address, s;
+ 	string pstart, label[5000], exeloc, loc, start, st, input, mloc[3000], textloc, textlen, lbl, newadd, address, s;
  	int i,j,x,y,length,location,loc1;
- 	int n = 0, num = 0, inc = 0, count = 0, record = 0, mlen[30];
- 	char operation, opr[30], ch, *add1, temp[10];
+ 	int n = 0, num = 0, inc = 0, count = 0, record = 0, mlen[1000];
+ 	char operation, opr[3000], ch, *add1, temp[1000];
  	
 
 	while(!fp2.eof())
@@ -155,6 +155,10 @@ int main()
 		}
 		while(newadd.size() < length){
 			newadd = "0" + newadd;
+		}
+		if(newadd.size() > length){
+			int p = newadd.size() - length;
+			newadd = newadd.substr(p);
 		}
   		x = 0; 
   		y = 0;

@@ -120,7 +120,13 @@ int hexadecimalToDecimal(string hexVal)
 // subtract 2 hexadecimal values
 string subtract(string a,string b){
     int v = hexadecimalToDecimal(a) - hexadecimalToDecimal(b);
-    return decToHexa(v);
+    if(v < 0){
+        string t = Add_Hex(a,"1000000");
+        return subtract(t,b);
+    }
+    else {
+        return decToHexa(v);
+    }
 }
 
 string max_calc(string a,string b){

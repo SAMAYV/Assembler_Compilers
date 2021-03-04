@@ -13,11 +13,11 @@ using namespace std;
 int main()
 {
     fstream fp,fi,fo,ff;
-    string counter1, curr_addr, start_addr, curr_opt, curr_label, obj_code, ctr, prog_start, prog_size, line, addr, addr1, label, opt, opr, opt1, opvalue, p;
-    int counter, d, size, a, b, start, j, l, k, intervals, i, temp, n;
+    string counter1, curr_addr, start_addr, end_addr, curr_opt, curr_label, program_name, obj_code, ctr, prog_start, prog_size, line, addr, addr1, label, opt, opr, opt1, opvalue, p;
+    int counter, d, iter = 0, size, a, b, start, j, l, k, intervals, i, temp, n;
 
-    fp.open("intermediate.txt",ios::in);
-    ff.open("object.txt",ios::out);
+    fp.open("intermediate_1.txt",ios::in);
+    ff.open("object_1.txt",ios::out);
 
     // opt represents operation/opcode 
     // opr represents operand 
@@ -42,8 +42,26 @@ int main()
     // find_number_of_columns is used to find in a line whether opcode, operand, labels are present or not
     // hexadecimalToDecimal function is used to convert a value from hexadecimal to decimal
 
+    a = fp.tellg();
+    while(!fp.eof()){
+        getline(fp,line);
+        if(!line.size() || line[0] == '.'){
+            continue;
+        }
+        string p = line.substr(20,10);
+        remove_trailing_spaces(p);
+        if(p == "END"){
+            end_addr = line.substr(30,30); 
+            remove_trailing_spaces(end_addr);
+            break;
+        }   
+    }
+
+    fp.seekg(a,ios::beg);
     while(!fp.eof())
     {
+        bool end = 0;
+        map<string,string> label_to_addr;
 
         // WRITING HEADER RECORD-----------------------------------------------------------------------------
         
@@ -69,6 +87,7 @@ int main()
         ctr = addr;
         counter = stoi(addr);
         prog_start = addr;
+        program_name = label;
         
         if(opt == "START" || opt == "CSECT")
         {
@@ -76,6 +95,10 @@ int main()
             for(k = label.size(); k < 6; k++){
                 ff << " ";
             }
+            if(label.size()){
+                label_to_addr[label] = addr;
+            }
+
             ff << "^00" << ctr;
             curr_opt = "";
             while(!fp.eof() && curr_opt != "CSECT"){
@@ -109,6 +132,8 @@ int main()
         a = fp.tellg();
         getline(fp,line);
 
+        map<string,int> curr_ref;
+
         addr = line.substr(0,10);
         label = line.substr(10,10);
         opt = line.substr(20,10);
@@ -128,6 +153,7 @@ int main()
             for(int z = 0; z < opr.size(); z++){
                 if(opr[z] == ','){
                     mp[x] = "";
+                    curr_ref[x] = 1;
                     x = "";
                 }
                 else {
@@ -136,6 +162,7 @@ int main()
             }
             if(x.size()){
                 mp[x] = 1;
+                curr_ref[x] = 1;
             }
             a = fp.tellg();
 
@@ -257,7 +284,7 @@ int main()
                 remove_trailing_spaces(opt);
                 remove_trailing_spaces(obj_code);
 
-                if(opt == "RESB" || opt == "RESW" || opt == "CSECT"){
+                if(opt == "RESB" || opt == "RESW" || opt == "CSECT" || opt == "EQU"){
                     fp.seekg(b,ios::beg);
                     break;
                 }
@@ -302,39 +329,87 @@ int main()
                 remove_trailing_spaces(opr);
                 remove_trailing_spaces(obj_code);
 
-                // Modification record calculation
+                if(label.size()){
+                    label_to_addr[label] = addr;
+                }
+
+                // MODIFICATION RECORD CALCULATION
                 vector<string> v;
                 string str;
+                int sign = 1, extsign = 0, ct = 0;
                 for(int z = 0; z < opr.size(); z++){
-                    if(opr[z] == '-' || opr[z] == '+' || opr[z] == ','){
-                        if(ext_ref.count(str.substr(1))){
-                            v.push_back(str);
+                    if(opr[z] != '+' && opr[z] != '-' && opr[z] != ',' && opr[z] != '(' && opr[z] != ')' && opr[z] != '#'){
+                        str.push_back(opr[z]);
+                    }
+                    if(opr[z] == ')' || opr[z] == '-' || opr[z] == '+' || z == opr.size()-1){
+                        if(ext_ref.count(str)){
+                            if(sign){
+                                v.push_back("+" + str);
+                            }
+                            else {
+                                v.push_back("-" + str);
+                            }
                         }
-                        else if(ext_ref.count(str)){
-                            v.push_back("+" + str);
+                        else if(curr_ref.count(str) && opt == "WORD"){
+                            if(sign){
+                                ct++;
+                            }
+                            else {
+                                ct--;
+                            }                            
                         }
                         str = "";
                     }
-                    str.push_back(opr[z]);
+                    if(opr[z] == '-' || opr[z] == '+'){
+                        if(!extsign){
+                            if(opr[z] == '-'){
+                                sign = 0;
+                            }
+                            else {
+                                sign = 1;
+                            }
+                        }
+                        else {
+                            if(opr[z] == '-'){
+                                sign = 1;
+                            }   
+                            else {
+                                sign = 0;
+                            }
+                        }
+                    }
+                    if(opr[z] == '('){
+                        extsign ^= 1;
+                        if(extsign){
+                            sign = 0;
+                        }
+                        else {
+                            sign = 1;
+                        }
+                    }
+                    if(opr[z] == ')'){
+                        extsign ^= 1;
+                    }
                 }
-                if(str.size()){
-                    if(ext_ref.count(str.substr(1))){
-                        v.push_back(str);
-                    }
-                    else if(ext_ref.count(str)){
-                        v.push_back("+" + str);
+                if(ct > 0){
+                    for(i = 0; i < ct; i++){
+                        v.push_back("+" + program_name);
                     }
                 }
-                int c = 0;
-                for(int z = obj_code.size()-1; z >= 0; z--){
-                    if(obj_code[z] != '0'){
-                        break;
-                    }
-                    else {
-                        c++;
-                    }
+                else {
+                    for(i = 0; i < abs(ct); i++){
+                        v.push_back("-" + program_name);
+                    }   
                 }
-                int k = hexadecimalToDecimal(addr) + (obj_code.size() - c)/2;
+                int c = 5;
+                int k; 
+                if(opt == "WORD"){
+                    c = 6;
+                    k = hexadecimalToDecimal(addr);
+                }
+                else {
+                    k = hexadecimalToDecimal(addr) + 1;
+                }
 
                 string p1 = decToHexa(c);
                 while(p1.size() < 2){
@@ -370,13 +445,21 @@ int main()
                 remove_trailing_spaces(opt);
                 remove_trailing_spaces(label);
                 remove_trailing_spaces(opr);
-                if(opt == "RESB" || opt == "RESW" || opt == "LTORG" || opt == "EQU" || opt == "END"){
+                if(opt == "END"){
+                    fp.seekg(a,ios::beg);
+                    end = 1;
+                    break;
+                }
+                if(opt == "RESB" || opt == "RESW" || opt == "LTORG" || opt == "EQU"){
                     continue;
                 }
                 else {
                     fp.seekg(a,ios::beg);
                     break;
                 }
+            }
+            if(end){
+                break;
             }
         }
 
@@ -389,12 +472,30 @@ int main()
         }
 
         // WRITING END RECORD--------------------------------------------------------------
-        ff << "\nE^00" << prog_start << "\n";
+        if(end || !iter){
+            getline(fp,line);
+            opr = line.substr(30,30);
+            remove_trailing_spaces(opr);
+            ff << "\nE";
+            if(iter == 0){
+                ff << "^00" << label_to_addr[end_addr] << "\n";
+            }
+            else if(opr.size()){
+                ff << "^00" << label_to_addr[opr] << "\n";
+            }
+            else {
+                ff << "\n";
+            }    
+        }
+        else {
+            ff << "\nE\n";
+        }
 
         if(!fp.eof()){
             fp.seekg(d,ios::beg);
             ff << "\n";
         }
+        iter++;
     }
     ff << "END";
     fp.close();

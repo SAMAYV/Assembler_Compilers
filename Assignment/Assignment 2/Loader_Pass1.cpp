@@ -23,8 +23,8 @@ int main()
 	char ch;
 
 	fstream fp1,fp2;
-	fp1.open("object.txt",ios::in);
-	fp2.open("estab.txt",ios::out);
+	fp1.open("object_1.txt",ios::in);
+	fp2.open("estab_1.txt",ios::out);
 
 	cout << "\nEnter the address where the program has to be loaded: ";
 
