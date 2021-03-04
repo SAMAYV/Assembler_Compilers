@@ -1,0 +1,47 @@
+0000      PROGA     START     0                                       
+                    EXTDEF    LISTA,ENDA                              
+                    EXTREF    LISTB,ENDB,LISTC,ENDC                   
+0000      REF1      LDA       LISTA                         032007    
+0003      REF2      +LDT      LISTB+4                       77100004  
+0007      REF3      LDX       #ENDA-LISTA                   050E0DA00000A
+000A      LISTA     EQU       *                                       
+000A      ENDA      EQU       *                                       
+032FF3    
+000D      REF4      WORD      ENDA-LISTA+LISTC              000FF0    
+0010      REF5      WORD      ENDC-LISTC-10                 000FED    
+0013      REF6      WORD      ENDC-LISTC+LISTA-1            000FEA    
+0016      REF7      WORD      ENDA-LISTA-(ENDB-LISTB)       000000    
+          REF8      WORD      LISTB-LISTA                             
+                    END       REF1                                    
+
+          PROGB     CSECT                                             
+                    EXTDEF    LISTB,ENDB                              
+                    EXTREF    LISTA,ENDA,LISTC,ENDC                   
+0004      REF1      +LDA      LISTA                         030FF9    
+0007      REF2      LDT       LISTB+4                       77300004  
+000B      REF3      +LDX      #ENDA-LISTA                             
+000B      LISTB     EQU       *                                       
+032FF2    
+000E      ENDB      EQU       *                             032FEF    
+0011      REF4      WORD      ENDA-LISTA+LISTC              000FEC    
+0014      REF5      WORD      ENDC-LISTC-10                 000FE9    
+0017      REF6      WORD      ENDC-LISTC+LISTA-1            000000    
+          REF7      WORD      ENDA-LISTA-(ENDB-LISTB)                 
+          REF8      WORD      LISTB-LISTA                             
+                    END                                               
+
+          PROGC     CSECT                                             
+                    EXTDEF    LISTC,ENDC                              
+                    EXTREF    LISTA,ENDA,LISTB,ENDB                   
+0008      REF1      +LDA      LISTA                         03100000  
+000C      REF2      +LDT      LISTB+4                                 
+000C      REF3      +LDX      #ENDA-LISTA                             
+050E0DA00000A
+000F      LISTC     EQU       *                             032FEE    
+0012      ENDC      EQU       *                             032FEB    
+0015      REF4      WORD      ENDA-LISTA+LISTC              000FE8    
+0018      REF5      WORD      ENDC-LISTC-10                 000000    
+          REF6      WORD      ENDC-LISTC+LISTA-1                      
+          REF7      WORD      ENDA-LISTA-(ENDB-LISTB)                 
+          REF8      WORD      LISTB-LISTA                             
+                    END                                               

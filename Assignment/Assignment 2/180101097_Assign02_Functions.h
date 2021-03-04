@@ -29,6 +29,12 @@ void add_trailing_spaces(string& a){
         a.push_back(' ');
     }
 }
+
+void add_trailing_spaces1(string& a){
+    while(a.size() < 30){
+        a.push_back(' ');
+    }
+}
   
 // Function to add the two hexadecimal numbers 
 string Add_Hex(string a, string b) 
