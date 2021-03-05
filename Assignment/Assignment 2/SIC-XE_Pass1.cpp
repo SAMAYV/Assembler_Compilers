@@ -173,6 +173,8 @@ int main()
     fp.seekg(0,ios::beg);
     no = 1;
     curr = 0;
+    ltorg.clear();
+
     while(!fp.eof())
     {
     	map<string,bool> occur;
@@ -201,7 +203,10 @@ int main()
 	    		break;
 	    	}
 	    	if(opt == "EXTREF" || opt == "EXTDEF" || opt == "END"){
-	    		fi << "          " << line << "          \n";
+	    		fi << "          " << line << "          ";
+	    		if(!fp.eof() || ltorg.size()){
+	    			fi << "\n";
+	    		}
 	    		no++;
 	    		continue;
 	    	}
@@ -216,10 +221,10 @@ int main()
 	    	if(!obj_size.count(no)){
 	    		add_trailing_spaces(z);
 	    		fi << z << "\n";
-	    		no++;
 	    	}
 
 		    if(opt == "LTORG"){
+		    	no++;
 		    	for(auto it:ltorg){
 		    		addr = addr_map[no];
 		    		label = "*";
@@ -238,8 +243,10 @@ int main()
 		    		no++;
 		    	}
 		    	ltorg.clear();
+		    	continue;
 		    }
 		    if(!obj_size.count(no)){
+		    	no++;
 		    	continue;
 		    }
 	    	
@@ -250,6 +257,7 @@ int main()
 		    remove_trailing_spaces(label);
 		    remove_trailing_spaces(opt);
 		    remove_trailing_spaces(opr);
+	    	
 	    	
 	    	if(obj_size[no] == 1){
 	    		if(opr.size()){
@@ -342,6 +350,9 @@ int main()
 	    					}
 	    					else {
 	    						arr[2] = subtract(arr[2],val);
+	    						while(arr[2].size() < 5){
+	    							arr[2] = "0" + arr[2];
+	    						}
 	    						arr[2] = arr[2].substr(arr[2].size()-5);
 	    					}
 	    					break;
@@ -350,8 +361,39 @@ int main()
 	    		}
 	    		else {
 	    			if(opr.size() && opr[0] == '#'){
-	    				add = opr.substr(1);
+	    				add = "0";
+	    				bool f = 1;
+	    				string str;
+	    				for(i = 1; i < opr.size()+1; i++){
+	    					if(i == opr.size() || opr[i] == '+' || opr[i] == '-'){
+	    						if(mp.count(str)){
+	    							for(auto it:mp[str]){
+	    								if(it.first == curr){
+	    									str = it.second;
+	    									break;
+	    								}
+	    							}
+	    						}
+	    						if(f){
+	    							add = Add_Hex(add,str);
+	    						}
+	    						else {
+	    							add = subtract(add,str);
+	    						}
+	    						str = "";
+	    						if(i != opr.size() && opr[i] == '-'){
+	    							f = 0;
+	    						}
+	    						else {
+	    							f = 1;
+	    						}
+	    					}
+	    					else {
+	    						str.push_back(opr[i]);
+	    					}
+	    				}
 	    				arr[2] = Add_Hex(arr[2],add);
+	    				arr[2] = arr[2].substr(arr[2].size()-3);
 	    			}
 	    			else if(opr.size()){
 	    				sub = addr_map[no+1];

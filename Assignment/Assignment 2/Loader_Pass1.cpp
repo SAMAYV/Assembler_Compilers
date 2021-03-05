@@ -16,7 +16,7 @@ struct ESTAB {
 
 int main()
 {
-	ESTAB es[20];
+	ESTAB es[100];
 	string input, name, symbol;  
 	string progaddr, csaddr, add, len;
 	int count = 0, a;
