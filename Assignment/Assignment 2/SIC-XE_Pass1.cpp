@@ -12,26 +12,28 @@ using namespace std;
 
 int main()
 {
-	fstream fp,fo,fi;
-    int a, i, j = 0, intervals, counter, ERROR_FLAG = 0;
+	fstream fp,fo,fi,fs;
+    int a, i, j = 0, intervals, counter, ERROR_FLAG = 0, no = 1, curr = 0;
     string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk;
 
-    fp.open("input_program.txt",ios::in);
+    fp.open("program.txt",ios::in);
     fo.open("opcode_table.txt",ios::in);
     fi.open("intermediate.txt",ios::out);
+    fs.open("symtab.txt",ios::out);
 
     map<int,string> addr_map;
-    int no = 1;
+    map<string,bool> occur;
     vector<pair<string,int>> ltorg;
     map<int,int> obj_size;
     map<string,vector<pair<int,string>>> mp; 
-    int curr = 0;
+    map<string,string> mp1, opcode_tab;
+    map<char,string> reg_map;
 
     while(!fp.eof())
     {
     	LOCCTR = "0000";
-    	map<string,bool> occur;
-    	map<string,string> mp1;
+    	occur.clear();
+    	mp1.clear();
     	getline(fp,line);
     	if(!line.size() || line[0] == '.'){
 	    	no++;
@@ -41,6 +43,7 @@ int main()
     	remove_trailing_spaces(label);
 	    addr_map[no] = LOCCTR;
 	    mp[label].push_back({curr,LOCCTR});
+	    mp1[label] = LOCCTR;
 	    no++;
 
 	    while(!fp.eof())
@@ -57,11 +60,12 @@ int main()
 	    	remove_trailing_spaces(label);
 	    	remove_trailing_spaces(opt);
 	    	remove_trailing_spaces(opr);
-	    	
+
 	    	if(opt == "EXTREF" || opt == "EXTDEF" || opt == "END"){
 	    		no++;
 	    		continue;
 	    	}
+	    	// PROCESSING ADDRESS FOR CONSTANT LITERALS
 	    	else if(opt == "LTORG"){
 	    		no++;
 	    		for(auto it:ltorg){
@@ -136,6 +140,8 @@ int main()
 	   			LOCCTR = Add_Hex(LOCCTR,"3");
 	   			obj_size[no] = 3;
 	   		}
+
+	   		// ADDING LITERAL CONSTANTS IN LTORG TABLE
 	   		if(opr[0] == '='){
 	   			p = opr.substr(3,opr.size()-4);
 	   			if(!occur.count(p)){
@@ -150,6 +156,8 @@ int main()
 	   		}
 	   		no++;
 	   	}
+
+	   	// PROCESSING OF LITERAL TABLE AFTER THE END OF 1 CONTROL SECTION
 	   	for(auto it:ltorg){
 	    	addr_map[no] = LOCCTR;
 	    	obj_size[no] = it.second;
@@ -159,10 +167,16 @@ int main()
 	    	no++;
 	    }
 	    ltorg.clear();
+
+	    // WRITING SYMBOLS IN FILE
+	    for(auto it:mp1){
+	    	fs << it.first << " " << it.second << "\n";
+ 	    }
+ 	    fs << "\n";
+
+ 	    // INCREMENTING CONTROL SECTION NUMBER
 	    curr++;
     }
-    map<string,string> opcode_tab;
-    map<char,string> reg_map;
 
     while(!fo.eof()){
     	fo >> code >> val;
@@ -177,7 +191,7 @@ int main()
 
     while(!fp.eof())
     {
-    	map<string,bool> occur;
+    	occur.clear();
     	getline(fp,line);
 	    if(!line.size() || line[0] == '.'){
 	    	no++;
@@ -187,6 +201,7 @@ int main()
 	    add_trailing_spaces(z);
     	fi << z << line << "          \n";
     	no++;
+
     	while(!fp.eof())
     	{
     		a = fp.tellg();
@@ -217,12 +232,14 @@ int main()
 	    	}
 	    	add_trailing_spaces(z);
 	    	fi << z << line;
+	    	
 	    	z = "";
 	    	if(!obj_size.count(no)){
 	    		add_trailing_spaces(z);
 	    		fi << z << "\n";
 	    	}
 
+	    	// WRITING LITERALS IN INTERMEDIATE FILE USING LITERAL TABLE
 		    if(opt == "LTORG"){
 		    	no++;
 		    	for(auto it:ltorg){
@@ -250,7 +267,8 @@ int main()
 		    	continue;
 		    }
 	    	
-		   	// CALCULATING OBJECT CODE
+		   	// CALCULATING OBJECT CODE FOR EACH INSTRUCTION
+
 	    	label = line.substr(0,10);
 		    opt = line.substr(10,10);
 		    opr = line.substr(20,30);
@@ -258,13 +276,10 @@ int main()
 		    remove_trailing_spaces(opt);
 		    remove_trailing_spaces(opr);
 	    	
-	    	
+	    	z = "00";
 	    	if(obj_size[no] == 1){
 	    		if(opr.size()){
 	    			z = opr.substr(2,opr.size()-3);	
-	    		}
-	    		else {
-	    			z = "00";
 	    		}
 	    	}
 	    	else if(obj_size[no] == 2){
@@ -275,16 +290,13 @@ int main()
 	    		else if(opr.size()){
 	    			z = z + reg_map[opr[0]] + "0";
 	    		}
-	    		else {
-	    			z = "00";
-	    		}
 	    	}
 	    	else {
 	    		p = opt;
 	    		if(opt[0] == '+'){
 	    			p = opt.substr(1);
 	    		}
-	    		string arr[5];
+	    		string arr[3];
 	    		arr[0] = "00";
 	    		arr[1] = "0";
 
@@ -335,7 +347,8 @@ int main()
 	    		// ------- ADDRESS CALCULATION ----------------
 
 	    		arr[2] = "000";
-	    		if(obj_size[no] == 4){
+	    		if(obj_size[no] == 4)
+	    		{
 	    			arr[2] = "00000";
 	    			for(i = 0; i < opr.size(); i++){
 	    				if(opr[i] == '+' || opr[i] == '-'){
@@ -353,14 +366,19 @@ int main()
 	    						while(arr[2].size() < 5){
 	    							arr[2] = "0" + arr[2];
 	    						}
-	    						arr[2] = arr[2].substr(arr[2].size()-5);
 	    					}
 	    					break;
 	    				}
 	    			}
+	    			while(arr[2].size() < 5){
+	    				arr[2] = "0" + arr[2];
+	    			}
+	    			arr[2] = arr[2].substr(arr[2].size()-5);
 	    		}
-	    		else {
-	    			if(opr.size() && opr[0] == '#'){
+	    		else 
+	    		{
+	    			if(opr.size() && opr[0] == '#')
+	    			{
 	    				add = "0";
 	    				bool f = 1;
 	    				string str;
@@ -393,9 +411,12 @@ int main()
 	    					}
 	    				}
 	    				arr[2] = Add_Hex(arr[2],add);
-	    				arr[2] = arr[2].substr(arr[2].size()-3);
+						while(arr[2].size() < 3){
+	    					arr[2] = "0" + arr[2];
+	    				}	    				
 	    			}
-	    			else if(opr.size()){
+	    			else if(opr.size())
+	    			{
 	    				sub = addr_map[no+1];
 	    				add = "0";
 
@@ -409,16 +430,18 @@ int main()
 	    				}
 	    				arr[2] = Add_Hex(arr[2],add);
 	    				arr[2] = subtract(arr[2],sub);
-
 	    				while(arr[2].size() < 3){
 	    					arr[2] = "0" + arr[2];
 	    				}
-	    				arr[2] = arr[2].substr(arr[2].size()-3);
 	    			} 
+	    			arr[2] = arr[2].substr(arr[2].size()-3);
 	    		}
 	    		z = arr[0] + arr[1] + arr[2];
 	    	}
-	    	if(opr.size() && opr[0] == '='){
+	    	
+	    	// ADDING LITERAL CONSTANTS IN LITERAL TABLE
+	    	if(opr.size() && opr[0] == '=')
+	    	{
 	    		p = opr.substr(3,opr.size()-4);
 	   			if(!occur.count(opr)){
 	   				if(p == "EOF"){
@@ -434,7 +457,10 @@ int main()
 	    	fi << z << "\n";
 	    	no++;
     	}
-    	for(auto it:ltorg){
+
+    	// PROCESSING LITERAL TABLE AFTER END OF EACH CONTROL SECTION
+    	for(auto it:ltorg)
+    	{
 		    addr = addr_map[no];
 		    label = "*";
 		    opt1 = it.first;
@@ -449,7 +475,9 @@ int main()
 		    add_trailing_spaces(obj_code);
 		    add_trailing_spaces1(opr);
 		    fi << addr << label << opt1 << opr << obj_code;
-		    if(!fp.eof()) cout << "\n";
+		    if(!fp.eof()){
+		    	fi << "\n";	
+		    } 
 			no++;
 		}
 		if(!fp.eof()){

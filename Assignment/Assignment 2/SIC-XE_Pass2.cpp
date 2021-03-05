@@ -12,7 +12,7 @@ using namespace std;
 
 int main()
 {
-    fstream fp,fi,fo,ff;
+    fstream fp,ff;
     string counter1, curr_addr, start_addr, end_addr, curr_opt, curr_label, program_name, obj_code, ctr, prog_start, prog_size, line, addr, addr1, label, opt, opr, opt1, opvalue, p;
     int counter, d, iter = 0, size, a, b, start, j, l, k, intervals, i, temp, n;
 

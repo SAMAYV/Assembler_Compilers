@@ -21,7 +21,7 @@ JGT		34
 JSUB 	48		
 RSUB 	4C		
 TIX  	2C		
-TIXR      B8        		
+TIXR      B8        
 TD   	E0		
 RD   	D8		
 WD   	DC		
@@ -30,4 +30,4 @@ OR		44
 ADDR      90        
 DIVR      9C        
 MULR      98        
-SUBR      94        
+SUBR      94         
