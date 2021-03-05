@@ -1,7 +1,7 @@
 /* 	
 	This Program should be compiled and executed in LINUX g++ environment 
-	g++ -o Pass2 180101097_Assign02_Loader_Pass2.cpp 
-	./Pass2 
+	g++ -o Loader_Pass2 Loader_Pass2.cpp 
+	./Loader_Pass2 
 */
 
 #include <bits/stdc++.h>
@@ -10,8 +10,8 @@
 
 using namespace std;
 
-struct exttable {
-  	string cextsym, extsym, address, length;
+struct estab_table {
+  	string ctrl_sec_name, symbol_name, address, length;
 };
 
 struct objectcode {
@@ -20,7 +20,7 @@ struct objectcode {
 
 int main()
 {
-	exttable estab[2000];
+	estab_table estab[2000];
  	objectcode obcode[50000];
 
  	fstream fp1,fp2,fp3;
@@ -29,14 +29,14 @@ int main()
  	fp3.open("output.txt",ios::out);
 
  	string pstart, label[5000], exeloc, loc, start, st, input, mloc[3000], textloc, textlen, lbl, newadd, address, s;
- 	int i,j,x,y,length,location,loc1;
+ 	int i, j, x, y, length, location, loc1;
  	int n = 0, num = 0, inc = 0, count = 0, record = 0, mlen[1000];
- 	char operation, opr[3000], ch, *add1, temp[1000];
+ 	char operation, opr[3000], ch, temp[1000];
  	
 
 	while(!fp2.eof())
  	{
-		fp2 >> estab[num].cextsym >> estab[num].extsym >> estab[num].address >> estab[num].length;
+		fp2 >> estab[num].ctrl_sec_name >> estab[num].symbol_name >> estab[num].address >> estab[num].length;
 		num++;
  	}
  	exeloc = loc = start = st = estab[0].address;
@@ -57,7 +57,7 @@ int main()
 				vtr.push_back(temp);
 			}
 			for(int i = 0; i < num; i++){
-				if(vtr[1] == estab[i].cextsym) {
+				if(vtr[1] == estab[i].ctrl_sec_name) {
 					pstart = estab[i].address;
 					break;
 				}
@@ -140,7 +140,7 @@ int main()
 		}
 		for(i = 0; i < num; i++)
 		{
-			if(lbl == estab[i].cextsym || lbl == estab[i].extsym){
+			if(lbl == estab[i].ctrl_sec_name || lbl == estab[i].symbol_name){
 				break;
 			}
 		}

@@ -1,7 +1,7 @@
 /* 	
 	This Program should be compiled and executed in LINUX g++ environment 
-	g++ -o Pass2 180101097_Assign02_Pass2.cpp 
-	./Pass2 
+	g++ -o Loader_Pass1 Loader_Pass1.cpp 
+	./Loader_Pass1 
 */
 
 #include <bits/stdc++.h>
@@ -11,14 +11,14 @@
 using namespace std;
 
 struct ESTAB {
-  	string csname, extsym, address, length;
+  	string ctrl_sec_name, symbol_name, address, length;
 };
 
 int main()
 {
-	ESTAB es[100];
-	string input, name, symbol;  
-	string progaddr, csaddr, add, len;
+	ESTAB es[1000];
+	string line, name;  
+	string prog_addr, ctrl_sec_addr, add, len;
 	int count = 0, a;
 	char ch;
 
@@ -28,22 +28,23 @@ int main()
 
 	cout << "\nEnter the address where the program has to be loaded: ";
 
-	cin >> progaddr; 		// TAKING THE PROGRAM ADDRESS FROM THE USER, GENERALLY IT IS DONE BY THE OS
-	csaddr = progaddr;
+	// TAKING THE PROGRAM ADDRESS FROM THE USER, GENERALLY IT IS DONE BY THE OS
+	cin >> prog_addr; 		
+	ctrl_sec_addr = prog_addr;
 	
 	a = fp1.tellg();
-	getline(fp1,input);
+	getline(fp1,line);
 	fp1.seekg(a,ios::beg);
 
-	while(!fp1.eof() && input != "END")
+	while(!fp1.eof() && line != "END")
 	{
-		getline(fp1,input);
-		if(!input.size()){
+		getline(fp1,line);
+		if(!line.size() || line[0] == '.'){
 			continue;
 		}
-		if(input[0] == 'H')
+		if(line[0] == 'H')
 		{
-			stringstream str(input);
+			stringstream str(line);
 			string temp;
 			vector<string> vtr;
 			while(getline(str,temp,'^')){
@@ -51,44 +52,44 @@ int main()
 				vtr.push_back(temp);
 			}
 			name = vtr[1];
-			es[count].csname = name;
-			es[count].extsym = "  ";
+			es[count].ctrl_sec_name = name;
+			es[count].symbol_name = "  ";
 			
 			add = vtr[2];
-			es[count].address = Add_Hex(add, csaddr);
+			es[count].address = Add_Hex(add, ctrl_sec_addr);
 			
 			len = vtr[3];
 			es[count].length = len;
-			fp2 << es[count].csname << " **** " << es[count].address << " " << es[count].length << "\n";
+			fp2 << es[count].ctrl_sec_name << " ***** " << es[count].address << " " << es[count].length << "\n";
 		}
-		else if(input[0] == 'D')
+		else if(line[0] == 'D')
 		{
-			stringstream str(input);
+			stringstream str(line);
 			string temp;
 			vector<string> vtr;
 			while(getline(str,temp,'^')){
 				remove_trailing_spaces(temp);
 				vtr.push_back(temp);
 			}
-			while(input[0] != 'R')
+			while(line[0] != 'R')
 			{
 				for(int i = 1; i < vtr.size()-1; i+=2){
-					es[count].csname = "  ";
-					es[count].extsym = vtr[i];
-					es[count].address = Add_Hex(vtr[i+1],csaddr);
+					es[count].ctrl_sec_name = "  ";
+					es[count].symbol_name = vtr[i];
+					es[count].address = Add_Hex(vtr[i+1],ctrl_sec_addr);
 					es[count].length = "  ";
-					fp2 << "**** " << es[count].extsym << " " << es[count].address << " ****\n";
+					fp2 << "***** " << es[count].symbol_name << " " << es[count].address << " *****\n";
 					count++;
 				}
-				getline(fp1,input);
+				getline(fp1,line);
 			}
 		}
-		else if(input[0] == 'T')
+		else if(line[0] == 'T')
 		{
-			while(input[0] != 'E'){
-				getline(fp1,input);
+			while(line[0] != 'E'){
+				getline(fp1,line);
 			}
-			csaddr = Add_Hex(csaddr,len);
+			ctrl_sec_addr = Add_Hex(ctrl_sec_addr,len);
 			len = "";
 		}
 	}

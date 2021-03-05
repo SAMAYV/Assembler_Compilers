@@ -1,7 +1,7 @@
 /* 	
 	This Program should be compiled and executed in LINUX g++ environment 
-	g++ -o Pass2 180101097_Assign02_Pass2.cpp 
-	./Pass2 
+	g++ -o SICXE_Pass1 SICXE_Pass1.cpp 
+	./SICXE_Pass1 
 */
 
 #include <bits/stdc++.h>
@@ -13,13 +13,13 @@ using namespace std;
 int main()
 {
 	fstream fp,fo,fi,fs;
-    int a, i, j = 0, intervals, counter, ERROR_FLAG = 0, line_no = 1, ctrl_section = 0;
+    int a, i, j = 0, ERROR_FLAG = 0, line_no = 1, ctrl_section = 0;
     string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk, str1, str2;
 
-    fp.open("program.txt",ios::in);
+    fp.open("assembly_program1.txt",ios::in);
     fo.open("opcode_table.txt",ios::in);
     fi.open("intermediate.txt",ios::out);
-    fs.open("symtab.txt",ios::out);
+    fs.open("symbol_table.txt",ios::out);
 
     map<int,string> addr_map;
     map<string,bool> occur;
@@ -491,7 +491,13 @@ int main()
 			fi << "\n";
 		}
 		literal_table.clear();
+
+		// INCREMENTING CONTROL SECTION NUMBER
     	ctrl_section++;
     }
+    fp.close();
+    fo.close();
+    fi.close();
+    fs.close();
 	return 0;
 }
