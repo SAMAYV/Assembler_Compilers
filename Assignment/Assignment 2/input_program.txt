@@ -14,6 +14,9 @@ REF8      WORD      LISTB-LISTA
           END       REF1                          
 
 PROGB     CSECT                                   
+.
+.
+.
           EXTDEF    LISTB,ENDB                    
           EXTREF    LISTA,ENDA,LISTC,ENDC         
 REF1      +LDA      LISTA                         
@@ -29,6 +32,9 @@ REF8      WORD      LISTB-LISTA
           END                                     
 
 PROGC     CSECT                                   
+.
+.
+.
           EXTDEF    LISTC,ENDC                    
           EXTREF    LISTA,ENDA,LISTB,ENDB         
 REF1      +LDA      LISTA                         

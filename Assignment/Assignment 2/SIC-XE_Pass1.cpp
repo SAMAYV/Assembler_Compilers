@@ -16,7 +16,7 @@ int main()
     int a, i, j = 0, intervals, counter, ERROR_FLAG = 0;
     string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk;
 
-    fp.open("program.txt",ios::in);
+    fp.open("input_program.txt",ios::in);
     fo.open("opcode_table.txt",ios::in);
     fi.open("intermediate.txt",ios::out);
 

@@ -22,6 +22,9 @@ BUFEND    EQU       *
 MAXLEN    EQU       BUFEND-BUFFER                 
 
 RDREC     CSECT                                   
+.
+.
+.
           EXTREF    BUFFER,LENGTH,BUFEND          
           CLEAR     X                             
           CLEAR     A                             
@@ -40,7 +43,10 @@ EXIT      +STX      LENGTH
 INPUT     BYTE      X'F1'                         
 MAXLEN    WORD      BUFEND-BUFFER                 
 
-WRREC     CSECT                                   
+WRREC     CSECT                          
+.
+.
+.         
           EXTREF    LENGTH,BUFFER                 
           CLEAR     X                             
           +LDT      LENGTH                        
