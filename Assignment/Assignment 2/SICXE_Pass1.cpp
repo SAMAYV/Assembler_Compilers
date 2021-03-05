@@ -16,7 +16,7 @@ int main()
     int a, i, j = 0, ERROR_FLAG = 0, line_no = 1, ctrl_section = 0;
     string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk, str1, str2;
 
-    fp.open("assembly_program1.txt",ios::in);
+    fp.open("assembly_program2.txt",ios::in);
     fo.open("opcode_table.txt",ios::in);
     fi.open("intermediate.txt",ios::out);
     fs.open("symbol_table.txt",ios::out);
