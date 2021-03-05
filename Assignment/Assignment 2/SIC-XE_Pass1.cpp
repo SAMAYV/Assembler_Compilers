@@ -13,7 +13,7 @@ using namespace std;
 int main()
 {
 	fstream fp,fo,fi,fs;
-    int a, i, j = 0, intervals, counter, ERROR_FLAG = 0, no = 1, curr = 0;
+    int a, i, j = 0, intervals, counter, ERROR_FLAG = 0, line_no = 1, ctrl_section = 0;
     string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk, str1, str2;
 
     fp.open("program.txt",ios::in);
@@ -25,9 +25,9 @@ int main()
     map<string,bool> occur;
     vector<pair<string,int>> literal_table;
     map<int,int> obj_size;
-    map<string,vector<pair<int,string>>> mp; 
-    map<string,string> mp1, opcode_tab;
-    map<char,string> reg_map;
+    map<string,vector<pair<int,string>>> label_to_address; 
+    map<string,string> mp1, opcode_table;
+    map<char,string> reg_map = {{'A', "0"}, {'X',"1"}, {'L',"2"}, {'B',"3"}, {'S',"4"}, {'T',"5"}, {'F',"6"}};
 
     while(!fp.eof())
     {
@@ -36,22 +36,22 @@ int main()
     	mp1.clear();
     	getline(fp,line);
     	if(!line.size() || line[0] == '.'){
-	    	no++;
+	    	line_no++;
 	    	continue;
 	    }
     	label = line.substr(0,10);
     	remove_trailing_spaces(label);
-	    addr_map[no] = LOCCTR;
-	    mp[label].push_back({curr,LOCCTR});
+	    addr_map[line_no] = LOCCTR;
+	    label_to_address[label].push_back({ctrl_section,LOCCTR});
 	    mp1[label] = LOCCTR;
-	    no++;
+	    line_no++;
 
 	    while(!fp.eof())
 	    {
 	    	a = fp.tellg();
 	    	getline(fp,line);
 	    	if(!line.size() || line[0] == '.'){
-	    		no++;
+	    		line_no++;
 	    		continue;
 	    	}
 	    	label = line.substr(0,10);
@@ -65,19 +65,19 @@ int main()
 	    		if(opt == "END"){
 	    			mp1[opt] = opr;
 	    		} 
-	    		no++;
+	    		line_no++;
 	    		continue;
 	    	}
 	    	// PROCESSING ADDRESS FOR CONSTANT LITERALS
 	    	else if(opt == "LTORG"){
-	    		no++;
+	    		line_no++;
 	    		for(auto it:literal_table){
-	    			addr_map[no] = LOCCTR;
-	    			obj_size[no] = it.second;
-	    			mp[it.first].push_back({curr,LOCCTR});
+	    			addr_map[line_no] = LOCCTR;
+	    			obj_size[line_no] = it.second;
+	    			label_to_address[it.first].push_back({ctrl_section,LOCCTR});
 	    			mp1[it.first] = LOCCTR;
 	    			LOCCTR = Add_Hex(LOCCTR,decToHexa(it.second));
-	    			no++;
+	    			line_no++;
 	    		}
 	    		literal_table.clear();
 	    		continue;
@@ -86,22 +86,22 @@ int main()
 	    		fp.seekg(a,ios::beg);
 	    		break;
 	    	}
-	    	addr_map[no] = LOCCTR;
+	    	addr_map[line_no] = LOCCTR;
 	    	if(label.size()){
 	    		mp1[label] = LOCCTR;
-	    		mp[label].push_back({curr,LOCCTR});
+	    		label_to_address[label].push_back({ctrl_section,LOCCTR});
 	    	}
 	    	if(opt[0] == '+'){
 	    		LOCCTR = Add_Hex(LOCCTR,"4");
-	    		obj_size[no] = 4;
+	    		obj_size[line_no] = 4;
 	    	}
 	    	else if(opt == "CLEAR" || opt == "COMPR" || opt == "TIXR" || opt == "ADDR" || opt == "DIVR" || opt == "MULR"){
 	    		LOCCTR = Add_Hex(LOCCTR,"2");
-	    		obj_size[no] = 2;
+	    		obj_size[line_no] = 2;
 	    	}
 	    	else if(opt == "BYTE"){
 	   		 	LOCCTR = Add_Hex(LOCCTR,"1");
-	   		 	obj_size[no] = 1;
+	   		 	obj_size[line_no] = 1;
 	   		}
 	    	else if(opt == "RESW"){
 	   			int k = 3*stoi(opr);
@@ -135,13 +135,13 @@ int main()
 	    				}
 	    			}
 	    			mp1[label] = loc;
-	    			mp[label].push_back({curr,LOCCTR});
-	    			addr_map[no] = loc;
+	    			label_to_address[label].push_back({ctrl_section,LOCCTR});
+	    			addr_map[line_no] = loc;
 	    		}
 	    	}
 	    	else {
 	   			LOCCTR = Add_Hex(LOCCTR,"3");
-	   			obj_size[no] = 3;
+	   			obj_size[line_no] = 3;
 	   		}
 
 	   		// ADDING LITERAL CONSTANTS IN LTORG TABLE
@@ -157,17 +157,17 @@ int main()
 	   				occur[opr] = 1;
 	   			}
 	   		}
-	   		no++;
+	   		line_no++;
 	   	}
 
-	   	// PROCESSING OF LITERAL TABLE AFTER THE END OF 1 CONTROL SECTION
+	   	// PROCESSING OF LITERAL TABLE AFTER THE END OF EACH CONTROL SECTION
 	   	for(auto it:literal_table){
-	    	addr_map[no] = LOCCTR;
-	    	obj_size[no] = it.second;
-	    	mp[it.first].push_back({curr,LOCCTR});
+	    	addr_map[line_no] = LOCCTR;
+	    	obj_size[line_no] = it.second;
+	    	label_to_address[it.first].push_back({ctrl_section,LOCCTR});
 	    	mp1[it.first] = LOCCTR;
 	    	LOCCTR = Add_Hex(LOCCTR,decToHexa(it.second));
-	    	no++;
+	    	line_no++;
 	    }
 	    literal_table.clear();
 
@@ -182,18 +182,18 @@ int main()
  	    fs << "\n";
 
  	    // INCREMENTING CONTROL SECTION NUMBER
-	    curr++;
+	    ctrl_section++;
     }
 
+    // BUILDING OPCODE TABLE
     while(!fo.eof()){
     	fo >> code >> val;
-    	opcode_tab[code] = val;
+    	opcode_table[code] = val;
     }
-    reg_map = {{'A', "0"}, {'X',"1"}, {'L',"2"}, {'B',"3"}, {'S',"4"}, {'T',"5"}, {'F',"6"}};
 
     fp.seekg(0,ios::beg);
-    no = 1;
-    curr = 0;
+    line_no = 1;
+    ctrl_section = 0;
     literal_table.clear();
 
     while(!fp.eof())
@@ -201,20 +201,20 @@ int main()
     	occur.clear();
     	getline(fp,line);
 	    if(!line.size() || line[0] == '.'){
-	    	no++;
+	    	line_no++;
 	    	continue;
 	    }
-	    z = addr_map[no];
+	    z = addr_map[line_no];
 	    add_trailing_spaces(z);
     	fi << z << line << "          \n";
-    	no++;
+    	line_no++;
 
     	while(!fp.eof())
     	{
     		a = fp.tellg();
     		getline(fp,line);
 	    	if(!line.size() || line[0] == '.'){
-	    		no++;
+	    		line_no++;
 	    		continue;
 	    	}
 	    	opt = line.substr(10,10);
@@ -229,28 +229,28 @@ int main()
 	    		if(!fp.eof() || literal_table.size()){
 	    			fi << "\n";
 	    		}
-	    		no++;
+	    		line_no++;
 	    		continue;
 	    	}
 
 	    	z = "";
-	    	if(addr_map.count(no)){
-	    		z = addr_map[no];
+	    	if(addr_map.count(line_no)){
+	    		z = addr_map[line_no];
 	    	}
 	    	add_trailing_spaces(z);
 	    	fi << z << line;
 	    	
 	    	z = "";
-	    	if(!obj_size.count(no)){
+	    	if(!obj_size.count(line_no)){
 	    		add_trailing_spaces(z);
 	    		fi << z << "\n";
 	    	}
 
 	    	// WRITING LITERALS IN INTERMEDIATE FILE USING LITERAL TABLE
 		    if(opt == "LTORG"){
-		    	no++;
+		    	line_no++;
 		    	for(auto it:literal_table){
-		    		addr = addr_map[no];
+		    		addr = addr_map[line_no];
 		    		label = "*";
 		    		opt1 = it.first;
 		    		opr = "";
@@ -264,13 +264,13 @@ int main()
 		    		add_trailing_spaces(obj_code);
 		    		add_trailing_spaces1(opr);
 		    		fi << addr << label << opt1 << opr << obj_code << "\n";
-		    		no++;
+		    		line_no++;
 		    	}
 		    	literal_table.clear();
 		    	continue;
 		    }
-		    if(!obj_size.count(no)){
-		    	no++;
+		    if(!obj_size.count(line_no)){
+		    	line_no++;
 		    	continue;
 		    }
 	    	
@@ -284,13 +284,13 @@ int main()
 		    remove_trailing_spaces(opr);
 	    	
 	    	z = "00";
-	    	if(obj_size[no] == 1){
+	    	if(obj_size[line_no] == 1){
 	    		if(opr.size()){
 	    			z = opr.substr(2,opr.size()-3);	
 	    		}
 	    	}
-	    	else if(obj_size[no] == 2){
-	    		z = opcode_tab[opt];
+	    	else if(obj_size[line_no] == 2){
+	    		z = opcode_table[opt];
 	    		if(opr.size() > 2){
 	    			z = z + reg_map[opr[0]] + reg_map[opr[2]];
 	    		}
@@ -307,8 +307,8 @@ int main()
 	    		arr[0] = "00";
 	    		arr[1] = "0";
 
-	    		if(opcode_tab.count(p)){
-	    			arr[0] = opcode_tab[p];
+	    		if(opcode_table.count(p)){
+	    			arr[0] = opcode_table[p];
 	    		}	
 
 	    		// --------- N and I BITS SETTING -------------
@@ -329,7 +329,7 @@ int main()
 	    		// --------- X, B, P, E BITS SETTING -----------
 
 	    		// E BIT
-	    		if(obj_size[no] == 4){
+	    		if(obj_size[line_no] == 4){
 	    			arr[1] = Add_Hex(arr[1],"1");
 	    		}
 	    		// P BIT
@@ -354,7 +354,7 @@ int main()
 	    		// ------- ADDRESS CALCULATION ----------------
 
 	    		arr[2] = "000";
-	    		if(obj_size[no] == 4)
+	    		if(obj_size[line_no] == 4)
 	    		{
 	    			arr[2] = "00000";
 	    			for(i = 0; i < opr.size(); i++){
@@ -391,9 +391,9 @@ int main()
 	    				string str;
 	    				for(i = 1; i < opr.size()+1; i++){
 	    					if(i == opr.size() || opr[i] == '+' || opr[i] == '-'){
-	    						if(mp.count(str)){
-	    							for(auto it:mp[str]){
-	    								if(it.first == curr){
+	    						if(label_to_address.count(str)){
+	    							for(auto it:label_to_address[str]){
+	    								if(it.first == ctrl_section){
 	    									str = it.second;
 	    									break;
 	    								}
@@ -424,13 +424,13 @@ int main()
 	    			}
 	    			else if(opr.size())
 	    			{
-	    				sub = addr_map[no+1];
+	    				sub = addr_map[line_no+1];
 	    				add = "0";
 
 	    				chk = opr;
 	    				if(chk[0] == '@') chk = chk.substr(1);
-	    				for(auto it:mp[chk]){
-	    					if(it.first == curr){
+	    				for(auto it:label_to_address[chk]){
+	    					if(it.first == ctrl_section){
 	    						add = it.second;
 	    						break;
 	    					}
@@ -462,13 +462,13 @@ int main()
 	    	}
 	    	add_trailing_spaces(z);
 	    	fi << z << "\n";
-	    	no++;
+	    	line_no++;
     	}
 
     	// PROCESSING LITERAL TABLE AFTER END OF EACH CONTROL SECTION
     	for(auto it:literal_table)
     	{
-		    addr = addr_map[no];
+		    addr = addr_map[line_no];
 		    label = "*";
 		    opt1 = it.first;
 		    opr = "";
@@ -485,13 +485,13 @@ int main()
 		    if(!fp.eof()){
 		    	fi << "\n";	
 		    } 
-			no++;
+			line_no++;
 		}
 		if(!fp.eof()){
 			fi << "\n";
 		}
 		literal_table.clear();
-    	curr++;
+    	ctrl_section++;
     }
 	return 0;
 }

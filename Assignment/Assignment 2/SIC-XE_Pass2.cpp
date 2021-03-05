@@ -345,11 +345,12 @@ int main()
                 vector<string> v;
                 string str;
                 int sign = 1, extsign = 0, ct = 0;
-                for(int z = 0; z < opr.size(); z++){
+                for(int z = 0; z < opr.size(); z++)
+                {
                     if(opr[z] != '+' && opr[z] != '-' && opr[z] != ',' && opr[z] != '(' && opr[z] != ')' && opr[z] != '#'){
                         str.push_back(opr[z]);
                     }
-                    if(opr[z] == ')' || opr[z] == '-' || opr[z] == '+' || z == opr.size()-1){
+                    if(opr[z] == ')' || opr[z] == '-' || opr[z] == '+' || opr[z] == ',' || z == opr.size()-1){
                         if(ext_ref.count(str)){
                             if(sign){
                                 v.push_back("+" + str);
