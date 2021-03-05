@@ -14,7 +14,7 @@ int main()
 {
 	fstream fp,fo,fi,fs;
     int a, i, j = 0, intervals, counter, ERROR_FLAG = 0, no = 1, curr = 0;
-    string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk;
+    string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk, str1, str2;
 
     fp.open("program.txt",ios::in);
     fo.open("opcode_table.txt",ios::in);
@@ -23,7 +23,7 @@ int main()
 
     map<int,string> addr_map;
     map<string,bool> occur;
-    vector<pair<string,int>> ltorg;
+    vector<pair<string,int>> literal_table;
     map<int,int> obj_size;
     map<string,vector<pair<int,string>>> mp; 
     map<string,string> mp1, opcode_tab;
@@ -62,13 +62,16 @@ int main()
 	    	remove_trailing_spaces(opr);
 
 	    	if(opt == "EXTREF" || opt == "EXTDEF" || opt == "END"){
+	    		if(opt == "END"){
+	    			mp1[opt] = opr;
+	    		} 
 	    		no++;
 	    		continue;
 	    	}
 	    	// PROCESSING ADDRESS FOR CONSTANT LITERALS
 	    	else if(opt == "LTORG"){
 	    		no++;
-	    		for(auto it:ltorg){
+	    		for(auto it:literal_table){
 	    			addr_map[no] = LOCCTR;
 	    			obj_size[no] = it.second;
 	    			mp[it.first].push_back({curr,LOCCTR});
@@ -76,7 +79,7 @@ int main()
 	    			LOCCTR = Add_Hex(LOCCTR,decToHexa(it.second));
 	    			no++;
 	    		}
-	    		ltorg.clear();
+	    		literal_table.clear();
 	    		continue;
 	    	}
 	    	if(opt == "CSECT"){
@@ -146,10 +149,10 @@ int main()
 	   			p = opr.substr(3,opr.size()-4);
 	   			if(!occur.count(p)){
 	   				if(p == "EOF"){
-	   					ltorg.push_back({opr,3});
+	   					literal_table.push_back({opr,3});
 	   				}
 	   				else {
-	   					ltorg.push_back({opr,p.size()/2});
+	   					literal_table.push_back({opr,p.size()/2});
 	   				}
 	   				occur[opr] = 1;
 	   			}
@@ -158,7 +161,7 @@ int main()
 	   	}
 
 	   	// PROCESSING OF LITERAL TABLE AFTER THE END OF 1 CONTROL SECTION
-	   	for(auto it:ltorg){
+	   	for(auto it:literal_table){
 	    	addr_map[no] = LOCCTR;
 	    	obj_size[no] = it.second;
 	    	mp[it.first].push_back({curr,LOCCTR});
@@ -166,11 +169,15 @@ int main()
 	    	LOCCTR = Add_Hex(LOCCTR,decToHexa(it.second));
 	    	no++;
 	    }
-	    ltorg.clear();
+	    literal_table.clear();
 
 	    // WRITING SYMBOLS IN FILE
 	    for(auto it:mp1){
-	    	fs << it.first << " " << it.second << "\n";
+	    	str1 = it.first;
+	    	str2 = it.second;
+	    	add_trailing_spaces(str1);
+	    	add_trailing_spaces(str2);
+	    	fs << str1 << str2 << "\n";
  	    }
  	    fs << "\n";
 
@@ -187,7 +194,7 @@ int main()
     fp.seekg(0,ios::beg);
     no = 1;
     curr = 0;
-    ltorg.clear();
+    literal_table.clear();
 
     while(!fp.eof())
     {
@@ -219,7 +226,7 @@ int main()
 	    	}
 	    	if(opt == "EXTREF" || opt == "EXTDEF" || opt == "END"){
 	    		fi << "          " << line << "          ";
-	    		if(!fp.eof() || ltorg.size()){
+	    		if(!fp.eof() || literal_table.size()){
 	    			fi << "\n";
 	    		}
 	    		no++;
@@ -242,7 +249,7 @@ int main()
 	    	// WRITING LITERALS IN INTERMEDIATE FILE USING LITERAL TABLE
 		    if(opt == "LTORG"){
 		    	no++;
-		    	for(auto it:ltorg){
+		    	for(auto it:literal_table){
 		    		addr = addr_map[no];
 		    		label = "*";
 		    		opt1 = it.first;
@@ -259,7 +266,7 @@ int main()
 		    		fi << addr << label << opt1 << opr << obj_code << "\n";
 		    		no++;
 		    	}
-		    	ltorg.clear();
+		    	literal_table.clear();
 		    	continue;
 		    }
 		    if(!obj_size.count(no)){
@@ -445,10 +452,10 @@ int main()
 	    		p = opr.substr(3,opr.size()-4);
 	   			if(!occur.count(opr)){
 	   				if(p == "EOF"){
-	   					ltorg.push_back({opr,3});
+	   					literal_table.push_back({opr,3});
 	   				}
 	   				else {
-	   					ltorg.push_back({opr,p.size()/2});
+	   					literal_table.push_back({opr,p.size()/2});
 	   				}
 	   				occur[opr] = 1;
 	   			}
@@ -459,7 +466,7 @@ int main()
     	}
 
     	// PROCESSING LITERAL TABLE AFTER END OF EACH CONTROL SECTION
-    	for(auto it:ltorg)
+    	for(auto it:literal_table)
     	{
 		    addr = addr_map[no];
 		    label = "*";
@@ -483,7 +490,7 @@ int main()
 		if(!fp.eof()){
 			fi << "\n";
 		}
-		ltorg.clear();
+		literal_table.clear();
     	curr++;
     }
 	return 0;

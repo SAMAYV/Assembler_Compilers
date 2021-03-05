@@ -12,12 +12,14 @@ using namespace std;
 
 int main()
 {
-    fstream fp,ff;
-    string counter1, curr_addr, start_addr, end_addr, curr_opt, curr_label, program_name, obj_code, ctr, prog_start, prog_size, line, addr, addr1, label, opt, opr, opt1, opvalue, p;
-    int counter, d, iter = 0, size, a, b, start, j, l, k, intervals, i, temp, n;
+    fstream fp,ff,fs;
+    string counter1, curr_addr, start_addr, end_addr, curr_opt, curr_label, program_name, obj_code, ctr, prog_start, prog_size, line, addr, addr1, label, opt, opr, opt1, opvalue, p, str1, str2;
+    int counter, d, iter = 0, size, a, b, start, j, l, k, intervals, i, temp, n, curr = 0;
+    bool f = 1;
 
     fp.open("intermediate.txt",ios::in);
     ff.open("object.txt",ios::out);
+    fs.open("symtab.txt",ios::in);
 
     // opt represents operation/opcode 
     // opr represents operand 
@@ -42,22 +44,25 @@ int main()
     // find_number_of_columns is used to find in a line whether opcode, operand, labels are present or not
     // hexadecimalToDecimal function is used to convert a value from hexadecimal to decimal
 
-    a = fp.tellg();
-    while(!fp.eof()){
-        getline(fp,line);
-        if(!line.size() || line[0] == '.'){
+    map<pair<int,string>,string> sym;
+
+    while(!fs.eof()){
+        getline(fs,line);
+        if(!line.size()){
+            curr++;
             continue;
         }
-        string p = line.substr(20,10);
-        remove_trailing_spaces(p);
-        if(p == "END"){
-            end_addr = line.substr(30,30); 
-            remove_trailing_spaces(end_addr);
-            break;
+        str1 = line.substr(0,10);
+        str2 = line.substr(10,10);
+        remove_trailing_spaces(str1);
+        remove_trailing_spaces(str2);
+        if(str1 == "END" && f){
+            f = 0;
+            end_addr = str2; 
         }   
+        sym[{curr,str1}] = str2;
     }
 
-    fp.seekg(a,ios::beg);
     while(!fp.eof())
     {
         bool end = 0;
@@ -246,7 +251,7 @@ int main()
         {
             a = fp.tellg();
             getline(fp,line);
-            
+
             // means that line is a comment line
             if(line.size() == 0 || line[0] == '.'){
                 continue;
@@ -284,6 +289,9 @@ int main()
                 remove_trailing_spaces(opt);
                 remove_trailing_spaces(obj_code);
 
+                if(opt == "END"){
+                    end = 1;
+                }
                 if(opt == "RESB" || opt == "RESW" || opt == "CSECT" || opt == "EQU"){
                     fp.seekg(b,ios::beg);
                     break;
@@ -472,20 +480,19 @@ int main()
         }
 
         // WRITING END RECORD--------------------------------------------------------------
-        if(end || !iter){
+        if(!iter){
+            ff << "\nE^00" << label_to_addr[end_addr] << "\n";
+        }
+        else if(end){
             getline(fp,line);
             opr = line.substr(30,30);
             remove_trailing_spaces(opr);
-            ff << "\nE";
-            if(iter == 0){
-                ff << "^00" << label_to_addr[end_addr] << "\n";
-            }
-            else if(opr.size()){
-                ff << "^00" << label_to_addr[opr] << "\n";
-            }
+            if(sym.count({iter,opr})){
+                ff << "\nE^00" << label_to_addr[sym[{iter,opr}]] << "\n";
+            } 
             else {
-                ff << "\n";
-            }    
+                ff << "\nE\n";
+            }
         }
         else {
             ff << "\nE\n";
