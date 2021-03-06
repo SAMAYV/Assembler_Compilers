@@ -16,7 +16,7 @@ int main()
     int a, i, j = 0, ERROR_FLAG = 0, line_no = 1, ctrl_section = 0;
     string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk, str1, str2;
 
-    fp.open("assembly_program2.txt",ios::in);
+    fp.open("assembly_program1.txt",ios::in);
     fo.open("opcode_table.txt",ios::in);
     fi.open("intermediate.txt",ios::out);
     fs.open("symbol_table.txt",ios::out);
@@ -26,14 +26,14 @@ int main()
     vector<pair<string,int>> literal_table;
     map<int,int> obj_size;
     map<string,vector<pair<int,string>>> label_to_address; 
-    map<string,string> mp1, opcode_table;
+    map<string,string> symbol_label_addr, opcode_table;
     map<char,string> reg_map = {{'A', "0"}, {'X',"1"}, {'L',"2"}, {'B',"3"}, {'S',"4"}, {'T',"5"}, {'F',"6"}};
 
     while(!fp.eof())
     {
     	LOCCTR = "0000";
     	occur.clear();
-    	mp1.clear();
+    	symbol_label_addr.clear();
     	getline(fp,line);
     	if(!line.size() || line[0] == '.'){
 	    	line_no++;
@@ -43,7 +43,7 @@ int main()
     	remove_trailing_spaces(label);
 	    addr_map[line_no] = LOCCTR;
 	    label_to_address[label].push_back({ctrl_section,LOCCTR});
-	    mp1[label] = LOCCTR;
+	    symbol_label_addr[label] = LOCCTR;
 	    line_no++;
 
 	    while(!fp.eof())
@@ -63,7 +63,7 @@ int main()
 
 	    	if(opt == "EXTREF" || opt == "EXTDEF" || opt == "END"){
 	    		if(opt == "END"){
-	    			mp1[opt] = opr;
+	    			symbol_label_addr[opt] = opr;
 	    		} 
 	    		line_no++;
 	    		continue;
@@ -75,7 +75,7 @@ int main()
 	    			addr_map[line_no] = LOCCTR;
 	    			obj_size[line_no] = it.second;
 	    			label_to_address[it.first].push_back({ctrl_section,LOCCTR});
-	    			mp1[it.first] = LOCCTR;
+	    			symbol_label_addr[it.first] = LOCCTR;
 	    			LOCCTR = Add_Hex(LOCCTR,decToHexa(it.second));
 	    			line_no++;
 	    		}
@@ -88,14 +88,14 @@ int main()
 	    	}
 	    	addr_map[line_no] = LOCCTR;
 	    	if(label.size()){
-	    		mp1[label] = LOCCTR;
+	    		symbol_label_addr[label] = LOCCTR;
 	    		label_to_address[label].push_back({ctrl_section,LOCCTR});
 	    	}
 	    	if(opt[0] == '+'){
 	    		LOCCTR = Add_Hex(LOCCTR,"4");
 	    		obj_size[line_no] = 4;
 	    	}
-	    	else if(opt == "CLEAR" || opt == "COMPR" || opt == "TIXR" || opt == "ADDR" || opt == "DIVR" || opt == "MULR"){
+	    	else if(opt == "CLEAR" || opt == "COMPR" || opt == "TIXR" || opt == "ADDR" || opt == "DIVR" || opt == "MULR" || opt == "SUBR"){
 	    		LOCCTR = Add_Hex(LOCCTR,"2");
 	    		obj_size[line_no] = 2;
 	    	}
@@ -120,8 +120,8 @@ int main()
 	    			for(i = 0; i < opr.size()+1; i++)
 	    			{
 	    				if(i == opr.size() || opr[i] == '-' || opr[i] == '+'){
-	    					if(f) loc = Add_Hex(loc,mp1[temp]);
-	    					else loc = subtract(loc,mp1[temp]);
+	    					if(f) loc = Add_Hex(loc,symbol_label_addr[temp]);
+	    					else loc = subtract(loc,symbol_label_addr[temp]);
 	    					temp = "";
 	    					if(opr[i] == '-'){
 	    						f = 0;
@@ -134,7 +134,7 @@ int main()
 	    					temp.push_back(opr[i]);
 	    				}
 	    			}
-	    			mp1[label] = loc;
+	    			symbol_label_addr[label] = loc;
 	    			label_to_address[label].push_back({ctrl_section,LOCCTR});
 	    			addr_map[line_no] = loc;
 	    		}
@@ -165,14 +165,14 @@ int main()
 	    	addr_map[line_no] = LOCCTR;
 	    	obj_size[line_no] = it.second;
 	    	label_to_address[it.first].push_back({ctrl_section,LOCCTR});
-	    	mp1[it.first] = LOCCTR;
+	    	symbol_label_addr[it.first] = LOCCTR;
 	    	LOCCTR = Add_Hex(LOCCTR,decToHexa(it.second));
 	    	line_no++;
 	    }
 	    literal_table.clear();
 
 	    // WRITING SYMBOLS IN FILE
-	    for(auto it:mp1){
+	    for(auto it:symbol_label_addr){
 	    	str1 = it.first;
 	    	str2 = it.second;
 	    	add_trailing_spaces(str1);
@@ -370,17 +370,12 @@ int main()
 	    					}
 	    					else {
 	    						arr[2] = subtract(arr[2],val);
-	    						while(arr[2].size() < 5){
-	    							arr[2] = "0" + arr[2];
-	    						}
+	    						make_size(arr[2],5);
 	    					}
 	    					break;
 	    				}
 	    			}
-	    			while(arr[2].size() < 5){
-	    				arr[2] = "0" + arr[2];
-	    			}
-	    			arr[2] = arr[2].substr(arr[2].size()-5);
+	    			make_size(arr[2],5);
 	    		}
 	    		else 
 	    		{
@@ -389,14 +384,14 @@ int main()
 	    				add = "0";
 	    				bool f = 1;
 	    				string str;
-	    				for(i = 1; i < opr.size()+1; i++){
-	    					if(i == opr.size() || opr[i] == '+' || opr[i] == '-'){
-	    						if(label_to_address.count(str)){
-	    							for(auto it:label_to_address[str]){
-	    								if(it.first == ctrl_section){
-	    									str = it.second;
-	    									break;
-	    								}
+	    				for(i = 1; i < opr.size()+1; i++)
+	    				{
+	    					if(i == opr.size() || opr[i] == '+' || opr[i] == '-')
+	    					{
+	    						for(auto it:label_to_address[str]){
+	    							if(it.first == ctrl_section){
+	    								str = it.second;
+	    								break;
 	    							}
 	    						}
 	    						if(f){
@@ -418,9 +413,7 @@ int main()
 	    					}
 	    				}
 	    				arr[2] = Add_Hex(arr[2],add);
-						while(arr[2].size() < 3){
-	    					arr[2] = "0" + arr[2];
-	    				}	    				
+						make_size(arr[2],3);
 	    			}
 	    			else if(opr.size())
 	    			{
@@ -437,11 +430,9 @@ int main()
 	    				}
 	    				arr[2] = Add_Hex(arr[2],add);
 	    				arr[2] = subtract(arr[2],sub);
-	    				while(arr[2].size() < 3){
-	    					arr[2] = "0" + arr[2];
-	    				}
+	    				make_size(arr[2],3);
 	    			} 
-	    			arr[2] = arr[2].substr(arr[2].size()-3);
+	    			make_size(arr[2],3);
 	    		}
 	    		z = arr[0] + arr[1] + arr[2];
 	    	}

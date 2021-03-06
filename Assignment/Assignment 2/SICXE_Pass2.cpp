@@ -18,7 +18,7 @@ int main()
 
     fp.open("intermediate.txt",ios::in);
     ff.open("object.txt",ios::out);
-    fs.open("symtab.txt",ios::in);
+    fs.open("symbol_table.txt",ios::in);
 
     map<pair<int,string>,string> symbol_table;
     map<string,string> label_to_addr;
@@ -89,9 +89,11 @@ int main()
                 label_to_addr[label] = addr;
             }
 
-            ff << "^00" << ctr;
+            make_size(ctr,6);
+            ff << "^" << ctr;
             curr_opt = "";
-            while(!fp.eof() && curr_opt != "CSECT"){
+            while(!fp.eof() && curr_opt != "CSECT")
+            {
                 d = fp.tellg();
                 getline(fp,line);
                 
@@ -111,8 +113,8 @@ int main()
             // calculating program size
             prog_size = subtract(addr,opr);
             remove_trailing_spaces(prog_size);
-            make_size_four(prog_size);
-            ff << "^00" << prog_size << "\n";
+            make_size(prog_size,6);
+            ff << "^" << prog_size << "\n";
 
             // move back the file pointer to second line of intermediate file
             fp.seekg(a,ios::beg);
@@ -156,8 +158,9 @@ int main()
 
             // WRITING DEFINE RECORDS FOR CURRENT CONTROL SECTION
             ff << "D";
-            for(auto it:define_records){
-                ff << "^" << it.first << "^00" << it.second;
+            for(auto &it:define_records){
+                make_size(it.second,6);
+                ff << "^" << it.first << "^" << it.second;
             }
             ff << "\n";
         }
@@ -273,12 +276,13 @@ int main()
 
             fp.seekg(a,ios::beg);
             p = decToHexa(size);
+            make_size(start_addr,6);
 
             if(size < 16){
-                ff << "\nT^00" << start_addr << "^0" << p;  
+                ff << "\nT^" << start_addr << "^0" << p;  
             }
             else {
-                ff << "\nT^00" << start_addr << "^" << p;   
+                ff << "\nT^" << start_addr << "^" << p;   
             }
 
             j = 0;
@@ -388,13 +392,11 @@ int main()
                 }
 
                 string p1 = decToHexa(c);
-                while(p1.size() < 2){
-                    p1 = "0" + p1;
-                }
+                make_size(p1,2);
+
                 string p2 = decToHexa(k);
-                while(p2.size() < 6){
-                    p2 = "0" + p2;
-                }
+                make_size(p2,6);
+
                 for(string it : v){
                     modification.push_back({p2, p1, it});
                 }
@@ -453,14 +455,17 @@ int main()
         // ------------------------- WRITING END RECORD-----------------------------------------------------------------------
         
         if(!ctrl_section){
-            ff << "\nE^00" << label_to_addr[end_addr] << "\n";
+            make_size(label_to_addr[end_addr],6);
+            ff << "\nE^" << label_to_addr[end_addr] << "\n";
         }
         else if(end){
             getline(fp,line);
             opr = line.substr(30,30);
             remove_trailing_spaces(opr);
-            if(symbol_table.count({ctrl_section,opr})){
-                ff << "\nE^00" << label_to_addr[symbol_table[{ctrl_section,opr}]] << "\n";
+            if(symbol_table.count({ctrl_section,opr}))
+            {
+                make_size(label_to_addr[symbol_table[{ctrl_section,opr}]],6);
+                ff << "\nE^" << label_to_addr[symbol_table[{ctrl_section,opr}]] << "\n";
             } 
             else {
                 ff << "\nE\n";

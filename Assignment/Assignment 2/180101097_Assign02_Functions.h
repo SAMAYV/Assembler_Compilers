@@ -144,8 +144,11 @@ string max_calc(string a,string b){
     return b;
 }
 
-void make_size_four(string& a){
-    while(a.size() < 4){
+void make_size(string& a, int sz){
+    if(a.size() > sz){
+        a = a.substr(a.size()-sz);
+    }
+    while(a.size() < sz){
         a = "0" + a;
     }
 }
