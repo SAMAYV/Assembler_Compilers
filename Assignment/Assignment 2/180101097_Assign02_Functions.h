@@ -1,3 +1,11 @@
+// subtract function will subtract 2 hexadecimal numbers
+// remove_trailing_spaces function is used to remove trailing spaces from a string
+// add_trailing_spaces function is used to add trailing spaces till length of string becomes 10
+// Add_Hex function is used for adding 2 hexadecimal numbers
+// decToHexa function is used to convert from decimal to Hexadecimal number
+// find_number_of_columns is used to find in a line whether opcode, operand, labels are present or not
+// hexadecimalToDecimal function is used to convert a value from hexadecimal to decimal
+
 #include <bits/stdc++.h>
 using namespace std;
 

@@ -1,7 +1,10 @@
 /* 	
 	This Program should be compiled and executed in LINUX g++ environment 
-	g++ -o SICXE_Pass1 SICXE_Pass1.cpp 
-	./SICXE_Pass1 
+	<number> = 1 or <number> = 2
+
+	g++ -o SICXE_Pass1 180101097_Assign02_SICXE_Pass1.cpp 
+	./SICXE_Pass1 <number>
+
 */
 
 #include <bits/stdc++.h>
@@ -10,13 +13,20 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
 	fstream fp,fo,fi,fs;
     int a, i, j = 0, ERROR_FLAG = 0, line_no = 1, ctrl_section = 0;
-    string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk, str1, str2;
+    string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk, str1, str2, str3;
 
-    fp.open("assembly_program1.txt",ios::in);
+    if(argc > 1){
+    	string file = "assembly_program" + string(argv[1]) + ".txt";
+    	fp.open(file.c_str(),ios::in);
+    }
+    else {
+    	fp.open("assembly_program1.txt",ios::in);	
+    }
+
     fo.open("opcode_table.txt",ios::in);
     fi.open("intermediate.txt",ios::out);
     fs.open("symbol_table.txt",ios::out);
@@ -27,6 +37,7 @@ int main()
     map<int,int> obj_size;
     map<string,vector<pair<int,string>>> label_to_address; 
     map<string,string> symbol_label_addr, opcode_table;
+    map<string,string> absolute_relative;
     map<char,string> reg_map = {{'A', "0"}, {'X',"1"}, {'L',"2"}, {'B',"3"}, {'S',"4"}, {'T',"5"}, {'F',"6"}};
 
     while(!fp.eof())
@@ -34,6 +45,7 @@ int main()
     	LOCCTR = "0000";
     	occur.clear();
     	symbol_label_addr.clear();
+    	absolute_relative.clear();
     	getline(fp,line);
     	if(!line.size() || line[0] == '.'){
 	    	line_no++;
@@ -44,6 +56,7 @@ int main()
 	    addr_map[line_no] = LOCCTR;
 	    label_to_address[label].push_back({ctrl_section,LOCCTR});
 	    symbol_label_addr[label] = LOCCTR;
+	    absolute_relative[label] = "R";
 	    line_no++;
 
 	    while(!fp.eof())
@@ -64,6 +77,7 @@ int main()
 	    	if(opt == "EXTREF" || opt == "EXTDEF" || opt == "END"){
 	    		if(opt == "END"){
 	    			symbol_label_addr[opt] = opr;
+	    			absolute_relative[opt] = "R";
 	    		} 
 	    		line_no++;
 	    		continue;
@@ -76,6 +90,7 @@ int main()
 	    			obj_size[line_no] = it.second;
 	    			label_to_address[it.first].push_back({ctrl_section,LOCCTR});
 	    			symbol_label_addr[it.first] = LOCCTR;
+	    			absolute_relative[it.first] = "R";
 	    			LOCCTR = Add_Hex(LOCCTR,decToHexa(it.second));
 	    			line_no++;
 	    		}
@@ -89,6 +104,7 @@ int main()
 	    	addr_map[line_no] = LOCCTR;
 	    	if(label.size()){
 	    		symbol_label_addr[label] = LOCCTR;
+	    		absolute_relative[label] = "R";
 	    		label_to_address[label].push_back({ctrl_section,LOCCTR});
 	    	}
 	    	if(opt[0] == '+'){
@@ -117,11 +133,28 @@ int main()
 	    		int f = 1;
 	    		if(opr != "*")
 	    		{
+	    			int ctr = 0;
 	    			for(i = 0; i < opr.size()+1; i++)
 	    			{
 	    				if(i == opr.size() || opr[i] == '-' || opr[i] == '+'){
-	    					if(f) loc = Add_Hex(loc,symbol_label_addr[temp]);
-	    					else loc = subtract(loc,symbol_label_addr[temp]);
+	    					if(f){
+	    						if(symbol_label_addr.count(temp)){
+	    							loc = Add_Hex(loc,symbol_label_addr[temp]);
+	    							ctr++;
+	    						}
+	    						else {
+	    							loc = Add_Hex(loc,temp);
+	    						}
+	    					} 
+	    					else {
+	    						if(symbol_label_addr.count(temp)){
+	    							loc = subtract(loc,symbol_label_addr[temp]);	
+	    							ctr--;
+	    						}
+	    						else {
+	    							loc = subtract(loc,temp);
+	    						}
+	    					}
 	    					temp = "";
 	    					if(opr[i] == '-'){
 	    						f = 0;
@@ -135,6 +168,12 @@ int main()
 	    				}
 	    			}
 	    			symbol_label_addr[label] = loc;
+	    			if(abs(ctr) > 0){
+	    				absolute_relative[label] = "R";
+	    			}
+	    			else {
+	    				absolute_relative[label] = "A";
+	    			}
 	    			label_to_address[label].push_back({ctrl_section,LOCCTR});
 	    			addr_map[line_no] = loc;
 	    		}
@@ -166,6 +205,7 @@ int main()
 	    	obj_size[line_no] = it.second;
 	    	label_to_address[it.first].push_back({ctrl_section,LOCCTR});
 	    	symbol_label_addr[it.first] = LOCCTR;
+	    	absolute_relative[it.first] = "R";
 	    	LOCCTR = Add_Hex(LOCCTR,decToHexa(it.second));
 	    	line_no++;
 	    }
@@ -175,9 +215,11 @@ int main()
 	    for(auto it:symbol_label_addr){
 	    	str1 = it.first;
 	    	str2 = it.second;
+	    	str3 = absolute_relative[it.first];
 	    	add_trailing_spaces(str1);
 	    	add_trailing_spaces(str2);
-	    	fs << str1 << str2 << "\n";
+	    	add_trailing_spaces(str3);
+	    	fs << str1 << str2 << str3 << "\n";
  	    }
  	    fs << "\n";
 

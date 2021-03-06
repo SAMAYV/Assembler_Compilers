@@ -1,6 +1,6 @@
 /* 	
 	This Program should be compiled and executed in LINUX g++ environment 
-	g++ -o Loader_Pass2 Loader_Pass2.cpp 
+	g++ -o Loader_Pass2 180101097_Assign02_Loader_Pass2.cpp 
 	./Loader_Pass2 
 */
 

@@ -1,7 +1,7 @@
 /* 	
 	This Program should be compiled and executed in LINUX g++ environment 
-	g++ -o Loader_Pass1 Loader_Pass1.cpp 
-	./Loader_Pass1 
+	g++ -o Loader_Pass1 180101097_Assign02_Loader_Pass1.cpp 
+	./Loader_Pass1 <address>
 */
 
 #include <bits/stdc++.h>
@@ -14,7 +14,7 @@ struct ESTAB {
   	string ctrl_sec_name, symbol_name, address, length;
 };
 
-int main()
+int main(int argc, char* argv[])
 {
 	ESTAB es[1000];
 	string line, name;  
@@ -26,10 +26,9 @@ int main()
 	fp1.open("object.txt",ios::in);
 	fp2.open("estab.txt",ios::out);
 
-	cout << "\nEnter the address where the program has to be loaded: ";
-
 	// TAKING THE PROGRAM ADDRESS FROM THE USER, GENERALLY IT IS DONE BY THE OS
-	cin >> prog_addr; 		
+	prog_addr = string(argv[1]); 	
+
 	ctrl_sec_addr = prog_addr;
 	
 	a = fp1.tellg();

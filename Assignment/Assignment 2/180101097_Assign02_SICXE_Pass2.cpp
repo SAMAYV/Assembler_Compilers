@@ -1,6 +1,6 @@
 /*  
     This Program should be compiled and executed in LINUX g++ environment 
-    g++ -o SICXE_Pass2 SICXE_Pass2.cpp 
+    g++ -o SICXE_Pass2 180101097_Assign02_SICXE_Pass2.cpp 
     ./SICXE_Pass2 
 */
 
@@ -10,10 +10,25 @@
 
 using namespace std;
 
+// opt represents operation/opcode 
+// opr represents operand 
+// label represents label 
+// addr represents address 
+// LOCCTR represents Location counter
+// fi is file pointer for symbol table file
+// fo is file pointer for opcode table file
+// fp is file pointer for intermediate file
+// ff is file pointer for object code file
+// prog_start stores the starting address of program
+// prog_size stores the program size in hexadecimal
+// intervals is used for finding number of columns in a line
+// line is used for reading a line from input program
+// size is used to calculate how many instructions to write in one text record row of the object code
+
 int main()
 {
     fstream fp,ff,fs;
-    string counter1, curr_addr, start_addr, end_addr, curr_opt, curr_label, program_name, obj_code, ctr, prog_start, prog_size, line, addr, addr1, label, opt, opr, opt1, opvalue, p, str1, str2;
+    string counter1, curr_addr, start_addr, end_addr, curr_opt, curr_label, program_name, obj_code, ctr, prog_start, prog_size, line, addr, addr1, label, opt, opr, opt1, opvalue, p, str1, str2, str3;
     int d, ctrl_section = 0, size, a, b, start, j, l, k, intervals, i, temp, n, f = 1, end = 0;
 
     fp.open("intermediate.txt",ios::in);
@@ -37,8 +52,12 @@ int main()
         }
         str1 = line.substr(0,10);
         str2 = line.substr(10,10);
+        str3 = line.substr(20,10);
+
         remove_trailing_spaces(str1);
         remove_trailing_spaces(str2);
+        remove_trailing_spaces(str3);
+        
         if(str1 == "END" && f){
             f = 0;
             end_addr = str2; 

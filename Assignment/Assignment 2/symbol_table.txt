@@ -1,22 +1,39 @@
-=C'EOF'   0030      
-BUFEND    1033      
-BUFFER    0033      
-CLOOP     0003      
-COPY      0000      
-ENDFIL    0017      
-FIRST     0000      
-LENGTH    002D      
-MAXLEN    1000      
-RETADR    002A      
+END       REF1      R         
+ENDA      000A      R         
+LISTA     000A      R         
+PROGA     0000      R         
+REF1      0000      R         
+REF2      0003      R         
+REF3      0007      R         
+REF4      000A      R         
+REF5      000D      R         
+REF6      0010      R         
+REF7      0013      R         
+REF8      0016      R         
 
-EXIT      0020      
-INPUT     0027      
-MAXLEN    0028      
-RDREC     0000      
-RLOOP     0009      
+END                 R         
+ENDB      000B      R         
+LISTB     000B      R         
+PROGB     0000      R         
+REF1      0000      R         
+REF2      0004      R         
+REF3      0007      R         
+REF4      000B      R         
+REF5      000E      R         
+REF6      0011      R         
+REF7      0014      R         
+REF8      0017      R         
 
-=X'05'    001C      
-END       FIRST     
-WLOOP     0006      
-WRREC     0000      
+END                 R         
+ENDC      000C      R         
+LISTC     000C      R         
+PROGC     0000      R         
+REF1      0000      R         
+REF2      0004      R         
+REF3      0008      R         
+REF4      000C      R         
+REF5      000F      R         
+REF6      0012      R         
+REF7      0015      R         
+REF8      0018      R         
 
