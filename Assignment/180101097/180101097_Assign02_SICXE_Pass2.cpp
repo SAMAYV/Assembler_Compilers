@@ -15,13 +15,11 @@ using namespace std;
 // label represents label 
 // addr represents address 
 // LOCCTR represents Location counter
-// fi is file pointer for symbol table file
-// fo is file pointer for opcode table file
 // fp is file pointer for intermediate file
 // ff is file pointer for object code file
+// fs is file pointer for symbol table file
 // prog_start stores the starting address of program
 // prog_size stores the program size in hexadecimal
-// intervals is used for finding number of columns in a line
 // line is used for reading a line from input program
 // size is used to calculate how many instructions to write in one text record row of the object code
 
@@ -35,11 +33,11 @@ int main()
     ff.open("object.txt",ios::out);
     fs.open("symbol_table.txt",ios::in);
 
-    map<pair<int,string>,string> symbol_table;
-    map<string,string> label_to_addr;
-    map<string,string> define_records;
-    map<string,int> refer_records;
-    vector<vector<string>> modification;
+    map<pair<int,string>,string> symbol_table;      // contains symbols with {control section number, label} as key and address as value
+    map<string,string> label_to_addr;               // contains label as key and address as value
+    map<string,string> define_records;              // contain define records 
+    map<string,int> refer_records;                  // contain refer records
+    vector<vector<string>> modification;            // contains modification records
 
     // -------------------- BUILDING SYMBOL TABLE -----------------------------------------------------------
 
@@ -67,7 +65,8 @@ int main()
 
     // ---------------------- WRITING OBJECT CODE -----------------------------------------------------------
 
-    ctrl_section = 0;
+    ctrl_section = 0;       // control section number
+
     while(!fp.eof())
     {
         end = 0;
@@ -78,6 +77,7 @@ int main()
         getline(fp,line);
         a = fp.tellg();
 
+        // comment line
         if(line.size() == 0 || line[0] == '.'){
             continue;
         }
@@ -245,6 +245,7 @@ int main()
             curr_opt = line.substr(20,10);
             remove_trailing_spaces(curr_opt);
 
+            // means different control section is reached
             if(curr_opt == "CSECT"){
                 break;
             }
@@ -263,7 +264,7 @@ int main()
                 b = fp.tellg();
                 getline(fp,line);
 
-                // if line is not a comment line
+                // if line is a comment line
                 if(line.size() == 0 || line[0] == '.'){
                     continue;
                 }
@@ -279,10 +280,14 @@ int main()
                 if(opt == "END"){
                     end = 1;
                 }
+
+                // NO NEED TO WRITE TEXT RECORD FOR THEM
                 if(opt == "RESB" || opt == "RESW" || opt == "CSECT" || opt == "EQU"){
                     fp.seekg(b,ios::beg);
                     break;
                 }
+
+                // INCREMENTING SIZE OF CURRENT TEXT RECORD
                 if(size + obj_code.size()/2 < 32){
                     size += obj_code.size()/2;
                 }

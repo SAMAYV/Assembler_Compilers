@@ -173,37 +173,12 @@ int main()
    			}
   		}
   	}
- 	
- 	count = 0;
- 	n = 0;
- 	s = subtract(st,"10");
- 	while(s.size() < 6){
- 		s = "0" + s;
- 	}
- 	fp3 << s << "\t";
- 	for(i = 1; i <= 16; i++)
- 	{
-  		fp3 << "xx";
-  		if(i % 4 == 0){
-   			fp3 << "\t";
-  		}
- 	}
- 	fp3 << "\n\n" << obcode[0].add << "\t";
- 	for(i = 0; i < inc; i++)
- 	{
-		fp3 << obcode[i].code;
-		n++;
-		if(n > 3)
-		{
-			fp3 << "\t";
-			n = 0;
-			count++;
-		}
-		if(count > 3)
-		{
-			fp3 << "\n\n" << obcode[i+1].add << "\t";
-			count = 0;
-		}
+ 	fp3 << "Address" << "\t\t" << "Value\n";
+ 	for(i = 0; i < inc; i++){
+ 		if(obcode[i].code != ".."){
+ 			fp3 << obcode[i].add << "\t\t";
+			fp3 << obcode[i].code << "\n";
+	 	}
   	}
 	
 	fp1.close();

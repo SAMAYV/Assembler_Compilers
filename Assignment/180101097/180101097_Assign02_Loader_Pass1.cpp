@@ -27,7 +27,12 @@ int main(int argc, char* argv[])
 	fp2.open("estab.txt",ios::out);
 
 	// TAKING THE PROGRAM ADDRESS FROM THE USER, GENERALLY IT IS DONE BY THE OS
-	prog_addr = string(argv[1]); 	
+	if(argc > 1){
+		prog_addr = string(argv[1]); 	
+	}
+	else {
+		prog_addr = "1000";
+	}
 
 	ctrl_sec_addr = prog_addr;
 	

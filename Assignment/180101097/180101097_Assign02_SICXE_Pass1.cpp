@@ -13,12 +13,23 @@
 
 using namespace std;
 
+// opt represents operation/opcode 
+// opr represents operand 
+// label represents label 
+// addr represents address 
+// LOCCTR represents Location counter
+// fo is file pointer for opcode table file
+// fi is file pointer for intermediate code file
+// fs is file pointer for symbol table file
+// line is used for reading a line from input program
+
 int main(int argc, char* argv[])
 {
 	fstream fp,fo,fi,fs;
     int a, i, j = 0, ERROR_FLAG = 0, line_no = 1, ctrl_section = 0;
     string line, temp, label, opt, opr, opt1, addr, obj_code, LOCCTR, p, code, val, z, add, sub, chk, str1, str2, str3;
 
+    // finding the name of input assembly program file
     if(argc > 1){
     	string file = "assembly_program" + string(argv[1]) + ".txt";
     	fp.open(file.c_str(),ios::in);

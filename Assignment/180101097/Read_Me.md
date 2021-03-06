@@ -8,6 +8,9 @@
 
 # All the programs should be compiled and executed in LINUX g++ environment 
 
+- opcode_table.txt contains the operation codes used by the program.
+- 180101097_Assign02_Functions.h is the header file containing additional functions used by the program files. 
+
 # Instructions for running the code:
 	
 	- First run SICXE_Pass1.cpp using the below command. It will generate intermediate.txt, symbol_table.txt. 
