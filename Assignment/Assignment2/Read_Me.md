@@ -44,4 +44,4 @@
 
 - estab.txt will contain the estab table for each control section. Values not present are marked as "*****". 
 
-- output.txt will contain the memory locations from starting address to ending address which the program uses. The memory locations not written by the program are treated as '.' 
+- output.txt will contain the memory locations and their corresponding values which the program uses. 

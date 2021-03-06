@@ -16,7 +16,7 @@ struct ESTAB {
 
 int main(int argc, char* argv[])
 {
-	ESTAB es[1000];
+	ESTAB es[1000];			// used to store estab values
 	string line, name;  
 	string prog_addr, ctrl_sec_addr, add, len;
 	int count = 0, a;

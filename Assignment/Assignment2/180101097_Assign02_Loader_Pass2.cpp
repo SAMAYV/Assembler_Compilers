@@ -20,10 +20,15 @@ struct objectcode {
 
 int main()
 {
-	estab_table estab[2000];
- 	objectcode obcode[50000];
+	estab_table estab[2000];	// used to store estab values
+ 	objectcode obcode[100000];	// contains the corresponding object code from the starting address of program 
 
  	fstream fp1,fp2,fp3;
+
+ 	// fp1 is file pointer for object file
+	// fp2 is file pointer for estab file
+	// fp3 is file pointer for output file
+ 	
  	fp1.open("object.txt",ios::in);
  	fp2.open("estab.txt",ios::in);
  	fp3.open("output.txt",ios::out);
@@ -33,7 +38,7 @@ int main()
  	int n = 0, num = 0, inc = 0, count = 0, record = 0, mlen[1000];
  	char operation, opr[3000], ch, temp[1000];
  	
-
+ 	// storing values in estab table 
 	while(!fp2.eof())
  	{
 		fp2 >> estab[num].ctrl_sec_name >> estab[num].symbol_name >> estab[num].address >> estab[num].length;
@@ -47,6 +52,8 @@ int main()
 		if(!input.size() || input == "END"){
 			continue;
 		}
+
+		// for header record
 		if(input[0] == 'H')
 		{
 			stringstream str(input);
@@ -68,6 +75,7 @@ int main()
 		}
 		do
 		{
+			// for text record
 			if(input[0] == 'T')
 			{
 				stringstream str(input);
@@ -85,6 +93,7 @@ int main()
 				int p = hexadecimalToDecimal(x);
 				for(i = 0; i < p; i++)
 				{
+					// no instruction is present in this location
 					obcode[inc].code = "..";
 					obcode[inc++].add = start;
 					start = Add_Hex(start,"1");
@@ -94,12 +103,15 @@ int main()
 
 				for(int j = 3; j < vtr.size(); j++){
 					for(int k = 0; k < vtr[j].size()-1; k+=2){
+
+						// writing instruction code and address
 						obcode[inc].code = vtr[j].substr(k,2);
 						obcode[inc++].add = start;
 						start = Add_Hex(start,"1");
 					}
 				}
 		 	}
+		 	// for modification records
 			else if(input[0] == 'M')
 			{
 				stringstream str(input);
@@ -109,6 +121,8 @@ int main()
 					remove_trailing_spaces(temp);
 					vtr.push_back(temp);
 				}
+
+				// storing modification records
 				mloc[record] = Add_Hex(vtr[1], pstart);
 				mlen[record] = hexadecimalToDecimal(vtr[2]);
 				label[record] = vtr[3];
@@ -119,6 +133,7 @@ int main()
 		while(input[0] != 'E');
  	}
 
+ 	// processing modification records
 	for(n = 0; n < record; n++)
 	{
 		operation = label[n][0];
@@ -132,18 +147,23 @@ int main()
 		loc1 = location;
 		count = 0;
 
+		// creating address for this current modification record
 		while(length < mlen[n])
 		{
 			address += obcode[location++].code;
 			count++;
 			length += 2;
 		}
+
+		// checking for modification record label in estab table
 		for(i = 0; i < num; i++)
 		{
 			if(lbl == estab[i].ctrl_sec_name || lbl == estab[i].symbol_name){
 				break;
 			}
 		}
+
+		// creating new address to write 
 		switch(operation)
 		{
 			case '+':
@@ -164,6 +184,7 @@ int main()
   		y = 0;
   		while(count > 0)
   		{
+  			// writing new address value in location
    			obcode[loc1].code[x++] = newadd[y++];
    			if(x > 1)
    			{
@@ -173,7 +194,9 @@ int main()
    			}
   		}
   	}
- 	fp3 << "Address" << "\t\t" << "Value\n";
+
+  	// writing addresses and their corresponding location values in output.txt
+ 	fp3 << "Address" << "\t\t" << "Value\n\n";
  	for(i = 0; i < inc; i++){
  		if(obcode[i].code != ".."){
  			fp3 << obcode[i].add << "\t\t";
