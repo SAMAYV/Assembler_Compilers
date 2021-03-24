@@ -16,13 +16,14 @@ letter 		[a-zA-Z]
 number		{digit}+
 digit		[0-9]
 operation	[-|+|*|/|^|=]
+others		[;|:|,|:=|(|)]
 
 /* rules */
 
 %%
 
 {number}		{
-					printf("%d\n", atoi(yytext));
+					printf("NUMBER %d\n", atoi(yytext));
 				}
 {identifier}	{
 					int found = 0;
@@ -33,11 +34,20 @@ operation	[-|+|*|/|^|=]
 						}
 					}
 					if(!found){
-						printf("IDENTIFIER\n");
+						printf("IDENTIFIER %s\n", yytext);
 					}
 				}
 {delim}			{
-				}				
+				}
+{others}		{
+					int found = 0;
+					for(int i = 1; i < 50; i++){
+						if(strcmp(arr[i], yytext) == 0){
+							printf("%s\n", yytext);
+							found = 1;
+						}
+					}
+				}
 
 %%
 

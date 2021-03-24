@@ -732,7 +732,7 @@ case 1:
 YY_RULE_SETUP
 #line 24 "code.l"
 {
-					printf("%d\n", atoi(yytext));
+					printf("NUMBER %d\n", atoi(yytext));
 				}
 	YY_BREAK
 case 2:
@@ -747,7 +747,7 @@ YY_RULE_SETUP
 						}
 					}
 					if(!found){
-						printf("IDENTIFIER\n");
+						printf("IDENTIFIER %s\n", yytext);
 					}
 				}
 	YY_BREAK
