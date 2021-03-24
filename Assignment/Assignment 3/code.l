@@ -22,14 +22,22 @@ operation	[-|+|*|/|^|=]
 %%
 
 {number}		{
-					printf("Number\n");
+					printf("%d\n", atoi(yytext));
 				}
 {identifier}	{
-					if(strcmp(arr[1], yytext) == 0) printf("%s\n", yytext);
-					else printf("Identifier\n");
+					int found = 0;
+					for(int i = 1; i < 50; i++){
+						if(strcmp(arr[i], yytext) == 0){
+							printf("%s\n", yytext);
+							found = 1;
+						}
+					}
+					if(!found){
+						printf("IDENTIFIER\n");
+					}
 				}
 {delim}			{
-				}					
+				}				
 
 %%
 
@@ -46,16 +54,19 @@ void preprocess()
 		return;
 	} 
 	char temp[10];
+	for(int i = 0; i < 10; i++){
+		temp[i] = '\0';
+	}
 	int temp_idx = 0, idx = 0, f = 0;
 	char c;
-	  
+	
 	while((c = fgetc(fp1)) != EOF) 
-	{ 
+	{
 		if(c == ' '){ 
 			f = 1;
 		} 
 		else if(c == '\n'){
-			strcpy(arr[idx],temp);
+			strcpy(arr[idx], temp);
 			for(int i = 0; i < 10; i++){
 				temp[i] = '\0';
 			}

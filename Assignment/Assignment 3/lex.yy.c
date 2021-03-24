@@ -732,30 +732,38 @@ case 1:
 YY_RULE_SETUP
 #line 24 "code.l"
 {
-					printf("Number\n");
+					printf("%d\n", atoi(yytext));
 				}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 27 "code.l"
 {
-					if(strcmp(arr[1], yytext) == 0) printf("%s\n", yytext);
-					else printf("Identifier\n");
+					int found = 0;
+					for(int i = 1; i < 50; i++){
+						if(strcmp(arr[i], yytext) == 0){
+							printf("%s\n", yytext);
+							found = 1;
+						}
+					}
+					if(!found){
+						printf("IDENTIFIER\n");
+					}
 				}
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 31 "code.l"
+#line 39 "code.l"
 {
-				}					
+				}				
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 34 "code.l"
+#line 42 "code.l"
 ECHO;
 	YY_BREAK
-#line 759 "lex.yy.c"
+#line 767 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1760,7 +1768,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 34 "code.l"
+#line 42 "code.l"
 
 
 /* auxillary functions */
@@ -1776,16 +1784,19 @@ void preprocess()
 		return;
 	} 
 	char temp[10];
+	for(int i = 0; i < 10; i++){
+		temp[i] = '\0';
+	}
 	int temp_idx = 0, idx = 0, f = 0;
 	char c;
-	  
+	
 	while((c = fgetc(fp1)) != EOF) 
-	{ 
+	{
 		if(c == ' '){ 
 			f = 1;
 		} 
 		else if(c == '\n'){
-			strcpy(arr[idx],temp);
+			strcpy(arr[idx], temp);
 			for(int i = 0; i < 10; i++){
 				temp[i] = '\0';
 			}
