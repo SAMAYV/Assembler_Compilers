@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-char* f1, f2, f3;
 char arr[50][10];
 
 %}
@@ -15,38 +14,44 @@ identifier 	[a-zA-Z][a-zA-Z0-9]*
 letter 		[a-zA-Z]
 number		{digit}+
 digit		[0-9]
-operation	[-|+|*|/|^|=]
-others		[;|:|,|:=|(|)]
+operation	[-|+|*|/|^|=|;|:|,|(|)]
+assignment	:=
 
 /* rules */
 
 %%
 
 {number}		{
-					printf("NUMBER %d\n", atoi(yytext));
+					printf("NUMBER: %d %d\n", atoi(yytext), 23);
 				}
 {identifier}	{
 					int found = 0;
 					for(int i = 1; i < 50; i++){
 						if(strcmp(arr[i], yytext) == 0){
-							printf("%s\n", yytext);
+							printf("TOKEN: %s %d\n", yytext, i);
 							found = 1;
 						}
 					}
 					if(!found){
-						printf("IDENTIFIER %s\n", yytext);
+						printf("IDENTIFIER: %s %d\n", yytext, 22);
 					}
 				}
 {delim}			{
 				}
-{others}		{
+{operation}		{
 					int found = 0;
 					for(int i = 1; i < 50; i++){
 						if(strcmp(arr[i], yytext) == 0){
-							printf("%s\n", yytext);
+							printf("TOKEN: %s %d\n", yytext, i);
 							found = 1;
 						}
 					}
+					if(!found){
+						printf("NOT FOUND TOKEN: %s\n", yytext);
+					}
+				}
+{assignment}	{
+					printf("TOKEN: %s %d\n", yytext, 15);
 				}
 
 %%
