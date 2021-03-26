@@ -453,13 +453,17 @@ char *yytext;
 #include <stdio.h>
 char arr[50][10];
 int line_no = 1;
-int mark_line[50];
 FILE* out;
 
-#line 460 "lex.yy.c"
+struct Node {
+	char lexeme[10];
+	struct Node* next;
+};
+
+#line 464 "lex.yy.c"
 /* regular expressions */
 /* rules */
-#line 463 "lex.yy.c"
+#line 467 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -676,10 +680,10 @@ YY_DECL
 		}
 
 	{
-#line 27 "code.l"
+#line 31 "code.l"
 
 
-#line 683 "lex.yy.c"
+#line 687 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -738,7 +742,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 29 "code.l"
+#line 33 "code.l"
 {
 					fprintf(out, "%d\t", line_no);
 					// NUMBER FOUND
@@ -747,7 +751,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 34 "code.l"
+#line 38 "code.l"
 {
 					fprintf(out, "%d\t", line_no);
 					
@@ -767,21 +771,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 50 "code.l"
+#line 54 "code.l"
 {	
 				}
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 52 "code.l"
+#line 56 "code.l"
 {
 					line_no++;
 				}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 55 "code.l"
+#line 59 "code.l"
 {
 					fprintf(out, "%d\t", line_no);
 					
@@ -797,7 +801,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 67 "code.l"
+#line 71 "code.l"
 {
 					fprintf(out, "%d\t", line_no);
 					
@@ -807,7 +811,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 73 "code.l"
+#line 77 "code.l"
 {	
 					fprintf(out, "%d\t", line_no);
 					
@@ -817,10 +821,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 80 "code.l"
+#line 84 "code.l"
 ECHO;
 	YY_BREAK
-#line 824 "lex.yy.c"
+#line 828 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1825,7 +1829,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 80 "code.l"
+#line 84 "code.l"
 
 
 /* auxillary functions */

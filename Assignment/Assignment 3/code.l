@@ -4,8 +4,12 @@
 #include <stdio.h>
 char arr[50][10];
 int line_no = 1;
-int mark_line[50];
 FILE* out;
+
+struct Node {
+	char lexeme[10];
+	struct Node* next;
+};
 
 %}
 
@@ -130,9 +134,6 @@ void preprocess()
 
 int main(int argc, char* argv[])
 {
-	for(int i = 1; i < 50; i++){
-		mark_line[i] = 0;
-	}
 	out = fopen("output.txt", "w");
 	preprocess();
 	if(argc > 1)
