@@ -11,6 +11,10 @@ struct Node {
 	struct Node* next;
 };
 
+struct Node* table[25];
+
+void insert(int index, char* l);
+
 %}
 
 /* regular expressions */
@@ -34,6 +38,7 @@ end 		END\.
 					fprintf(out, "%d\t", line_no);
 					// NUMBER FOUND
 					fprintf(out, "%d\t#%d\n", 23, atoi(yytext));
+					insert(23, yytext);
 				}
 {identifier}	{
 					fprintf(out, "%d\t", line_no);
@@ -49,6 +54,7 @@ end 		END\.
 					if(!found){
 						// IDENTIFIER FOUND
 						fprintf(out, "%d\t^%s\n", 22, yytext);
+						insert(22, yytext);
 					}
 				}
 {delim}			{	
@@ -89,10 +95,7 @@ int yywrap(){
 	return 1;
 }
 
-void temp(){
-}
-
-void preprocess()
+void generate_token_table()
 {	
 	FILE* fp1 = fopen("tokens.txt", "r");	
 	if(fp1 == NULL){
@@ -132,10 +135,58 @@ void preprocess()
 	fclose(fp1);
 }
 
+struct Node* newnode(){
+	struct Node* curr = (struct Node*)malloc(sizeof(struct Node));
+	curr->next = NULL;
+	for(int i = 0; i < 10; i++){
+		curr->lexeme[i] = '\0';
+	}
+	return curr;
+}
+
+void insert(int index, char* l){
+	struct Node* curr = table[index];
+	if(curr == NULL){
+		table[index] = newnode();
+		curr = table[index];
+	}
+	else {
+		while(curr->next != NULL){
+			curr = curr->next;
+		}
+		curr->next = newnode();
+		curr = curr->next;
+	}
+	int i = 0;
+	while(l[i] != '\0'){
+		curr->lexeme[i] = l[i];
+		i++;
+	}
+}
+
+void preprocess(){
+	out = fopen("output.txt", "w");
+	for(int i = 0; i < 25; i++){
+		table[i] = NULL;
+	}
+}
+
+void print_table(){
+	for(int i = 0; i < 25; i++){
+		printf("%d: ", i);
+		struct Node* curr = table[i];
+		while(curr != NULL){
+			printf("%s ", curr->lexeme);
+			curr = curr->next;
+		}
+		printf("\n");
+	}
+}
+
 int main(int argc, char* argv[])
 {
-	out = fopen("output.txt", "w");
 	preprocess();
+	generate_token_table();
 	if(argc > 1)
 	{
 		FILE *fp = fopen(argv[1], "r");
@@ -144,5 +195,6 @@ int main(int argc, char* argv[])
 		}
 	}
 	yylex();
+	print_table();
 	return 0;
 }

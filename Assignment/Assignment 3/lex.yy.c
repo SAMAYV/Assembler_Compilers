@@ -460,10 +460,14 @@ struct Node {
 	struct Node* next;
 };
 
-#line 464 "lex.yy.c"
+struct Node* table[25];
+
+void insert(int index, char* l);
+
+#line 468 "lex.yy.c"
 /* regular expressions */
 /* rules */
-#line 467 "lex.yy.c"
+#line 471 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -680,10 +684,10 @@ YY_DECL
 		}
 
 	{
-#line 31 "code.l"
+#line 35 "code.l"
 
 
-#line 687 "lex.yy.c"
+#line 691 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -742,16 +746,17 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 33 "code.l"
+#line 37 "code.l"
 {
 					fprintf(out, "%d\t", line_no);
 					// NUMBER FOUND
 					fprintf(out, "%d\t#%d\n", 23, atoi(yytext));
+					insert(23, yytext);
 				}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 38 "code.l"
+#line 43 "code.l"
 {
 					fprintf(out, "%d\t", line_no);
 					
@@ -766,26 +771,27 @@ YY_RULE_SETUP
 					if(!found){
 						// IDENTIFIER FOUND
 						fprintf(out, "%d\t^%s\n", 22, yytext);
+						insert(22, yytext);
 					}
 				}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 54 "code.l"
+#line 60 "code.l"
 {	
 				}
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 56 "code.l"
+#line 62 "code.l"
 {
 					line_no++;
 				}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 59 "code.l"
+#line 65 "code.l"
 {
 					fprintf(out, "%d\t", line_no);
 					
@@ -801,7 +807,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 71 "code.l"
+#line 77 "code.l"
 {
 					fprintf(out, "%d\t", line_no);
 					
@@ -811,7 +817,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 77 "code.l"
+#line 83 "code.l"
 {	
 					fprintf(out, "%d\t", line_no);
 					
@@ -821,10 +827,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 84 "code.l"
+#line 90 "code.l"
 ECHO;
 	YY_BREAK
-#line 828 "lex.yy.c"
+#line 834 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1829,7 +1835,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 84 "code.l"
+#line 90 "code.l"
 
 
 /* auxillary functions */
@@ -1838,10 +1844,7 @@ int yywrap(){
 	return 1;
 }
 
-void temp(){
-}
-
-void preprocess()
+void generate_token_table()
 {	
 	FILE* fp1 = fopen("tokens.txt", "r");	
 	if(fp1 == NULL){
@@ -1881,13 +1884,58 @@ void preprocess()
 	fclose(fp1);
 }
 
+struct Node* newnode(){
+	struct Node* curr = (struct Node*)malloc(sizeof(struct Node));
+	curr->next = NULL;
+	for(int i = 0; i < 10; i++){
+		curr->lexeme[i] = '\0';
+	}
+	return curr;
+}
+
+void insert(int index, char* l){
+	struct Node* curr = table[index];
+	if(curr == NULL){
+		table[index] = newnode();
+		curr = table[index];
+	}
+	else {
+		while(curr->next != NULL){
+			curr = curr->next;
+		}
+		curr->next = newnode();
+		curr = curr->next;
+	}
+	int i = 0;
+	while(l[i] != '\0'){
+		curr->lexeme[i] = l[i];
+		i++;
+	}
+}
+
+void preprocess(){
+	out = fopen("output.txt", "w");
+	for(int i = 0; i < 25; i++){
+		table[i] = NULL;
+	}
+}
+
+void print_table(){
+	for(int i = 0; i < 25; i++){
+		printf("%d: ", i);
+		struct Node* curr = table[i];
+		while(curr != NULL){
+			printf("%s ", curr->lexeme);
+			curr = curr->next;
+		}
+		printf("\n");
+	}
+}
+
 int main(int argc, char* argv[])
 {
-	for(int i = 1; i < 50; i++){
-		mark_line[i] = 0;
-	}
-	out = fopen("output.txt", "w");
 	preprocess();
+	generate_token_table();
 	if(argc > 1)
 	{
 		FILE *fp = fopen(argv[1], "r");
@@ -1896,6 +1944,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	yylex();
+	print_table();
 	return 0;
 }
 
