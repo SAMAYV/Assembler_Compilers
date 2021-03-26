@@ -3,12 +3,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 char arr[50][10];
+int line_no = 1;
+int mark_line[50];
+FILE* out;
 
 %}
 
 /* regular expressions */
 
-delim		[ \t\n]
+delim		[ \t]
+line 		\n
 ws			{delim}+
 identifier 	[a-zA-Z][a-zA-Z0-9]*
 letter 		[a-zA-Z]
@@ -16,42 +20,88 @@ number		{digit}+
 digit		[0-9]
 operation	[-|+|*|/|^|=|;|:|,|(|)]
 assignment	:=
+end 		END.
 
 /* rules */
 
 %%
 
 {number}		{
-					printf("NUMBER: %d %d\n", atoi(yytext), 23);
+					if(!mark_line[line_no]){
+						mark_line[line_no] = 1;
+						fprintf(out, "%d  ", line_no);	
+					}
+					else {
+						fprintf(out, "   ");
+					}
+					// NUMBER FOUND
+					fprintf(out, "%d %d\n", 23, atoi(yytext));
 				}
 {identifier}	{
+					if(!mark_line[line_no]){
+						mark_line[line_no] = 1;
+						fprintf(out, "%d  ", line_no);	
+					}
+					else {
+						fprintf(out, "   ");
+					}
+					
 					int found = 0;
 					for(int i = 1; i < 50; i++){
 						if(strcmp(arr[i], yytext) == 0){
-							printf("TOKEN: %s %d\n", yytext, i);
+							// TOKEN FOUND
+							fprintf(out, "%d\n", i);
 							found = 1;
 						}
 					}
 					if(!found){
-						printf("IDENTIFIER: %s %d\n", yytext, 22);
+						// IDENTIFIER FOUND
+						fprintf(out, "%d %s\n", 22, yytext);
 					}
 				}
-{delim}			{
+{delim}			{	
+				}
+{line}			{
+					line_no++;
 				}
 {operation}		{
+					if(!mark_line[line_no]){
+						mark_line[line_no] = 1;
+						fprintf(out, "%d  ", line_no);	
+					}
+					else {
+						fprintf(out, "   ");
+					}
 					int found = 0;
 					for(int i = 1; i < 50; i++){
 						if(strcmp(arr[i], yytext) == 0){
-							printf("TOKEN: %s %d\n", yytext, i);
+							// TOKEN FOUND
+							fprintf(out, "%d\n", i);
 							found = 1;
 						}
-					}
-					if(!found){
-						printf("NOT FOUND TOKEN: %s\n", yytext);
 					}
 				}
 {assignment}	{
-					printf("TOKEN: %s %d\n", yytext, 15);
+					if(!mark_line[line_no]){
+						mark_line[line_no] = 1;
+						fprintf(out, "%d  ", line_no);	
+					}
+					else {
+						fprintf(out, "   ");
+					}
+					// TOKEN FOUND
+					fprintf(out, "%d %s\n", 15, yytext);
+				}
+{end}			{	
+					if(!mark_line[line_no]){
+						mark_line[line_no] = 1;
+						fprintf(out, "%d  ", line_no);	
+					}
+					else {
+						fprintf(out, "   ");
+					}
+					// TOKEN FOUND
+					fprintf(out, "%d %s\n", 5, yytext);	
 				}
 
 %%
@@ -60,6 +110,9 @@ assignment	:=
 
 int yywrap(){
 	return 1;
+}
+
+void temp(){
 }
 
 void preprocess()
@@ -104,6 +157,10 @@ void preprocess()
 
 int main(int argc, char* argv[])
 {
+	for(int i = 1; i < 50; i++){
+		mark_line[i] = 0;
+	}
+	out = fopen("output.txt", "w");
 	preprocess();
 	if(argc > 1)
 	{
