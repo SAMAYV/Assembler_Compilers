@@ -20,31 +20,19 @@ number		{digit}+
 digit		[0-9]
 operation	[-|+|*|/|^|=|;|:|,|(|)]
 assignment	:=
-end 		END.
+end 		END\.
 
 /* rules */
 
 %%
 
 {number}		{
-					if(!mark_line[line_no]){
-						mark_line[line_no] = 1;
-						fprintf(out, "%d  ", line_no);	
-					}
-					else {
-						fprintf(out, "   ");
-					}
+					fprintf(out, "%d\t", line_no);
 					// NUMBER FOUND
-					fprintf(out, "%d %d\n", 23, atoi(yytext));
+					fprintf(out, "%d\t#%d\n", 23, atoi(yytext));
 				}
 {identifier}	{
-					if(!mark_line[line_no]){
-						mark_line[line_no] = 1;
-						fprintf(out, "%d  ", line_no);	
-					}
-					else {
-						fprintf(out, "   ");
-					}
+					fprintf(out, "%d\t", line_no);
 					
 					int found = 0;
 					for(int i = 1; i < 50; i++){
@@ -56,7 +44,7 @@ end 		END.
 					}
 					if(!found){
 						// IDENTIFIER FOUND
-						fprintf(out, "%d %s\n", 22, yytext);
+						fprintf(out, "%d\t^%s\n", 22, yytext);
 					}
 				}
 {delim}			{	
@@ -65,13 +53,8 @@ end 		END.
 					line_no++;
 				}
 {operation}		{
-					if(!mark_line[line_no]){
-						mark_line[line_no] = 1;
-						fprintf(out, "%d  ", line_no);	
-					}
-					else {
-						fprintf(out, "   ");
-					}
+					fprintf(out, "%d\t", line_no);
+					
 					int found = 0;
 					for(int i = 1; i < 50; i++){
 						if(strcmp(arr[i], yytext) == 0){
@@ -82,26 +65,16 @@ end 		END.
 					}
 				}
 {assignment}	{
-					if(!mark_line[line_no]){
-						mark_line[line_no] = 1;
-						fprintf(out, "%d  ", line_no);	
-					}
-					else {
-						fprintf(out, "   ");
-					}
+					fprintf(out, "%d\t", line_no);
+					
 					// TOKEN FOUND
-					fprintf(out, "%d %s\n", 15, yytext);
+					fprintf(out, "%d\n", 15);
 				}
 {end}			{	
-					if(!mark_line[line_no]){
-						mark_line[line_no] = 1;
-						fprintf(out, "%d  ", line_no);	
-					}
-					else {
-						fprintf(out, "   ");
-					}
+					fprintf(out, "%d\t", line_no);
+					
 					// TOKEN FOUND
-					fprintf(out, "%d %s\n", 5, yytext);	
+					fprintf(out, "%d\n", 5);	
 				}
 
 %%
