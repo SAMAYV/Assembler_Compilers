@@ -7,8 +7,8 @@
 
 # Instructions for running the code:
 
-	- First run code.l using the following command:
-		lex code.l
+	- First run 180101097.l using the following command:
+		lex 180101097.l
 
 	- It will generate lex.yy.c file. Now run the following command to generate a.out:
 		gcc lex.yy.c
@@ -19,4 +19,4 @@
 	- It will generate output.txt and hash_table.txt.
 
 - output.txt contains in each line the following values in output.txt: <line_number> <token_type> <token_specifier>
-- hash_table.txt contains the lexemes of integer and identifiers using the hash function as code values.
+- hash_table.txt contains the lexemes of integer and identifiers using the hash function as code values of tokens.
