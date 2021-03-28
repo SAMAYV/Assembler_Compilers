@@ -351,8 +351,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 8
-#define YY_END_OF_BUFFER 9
+#define YY_NUM_RULES 9
+#define YY_END_OF_BUFFER 10
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -360,10 +360,10 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[19] =
+static const flex_int16_t yy_accept[20] =
     {   0,
-        0,    0,    9,    8,    3,    4,    5,    1,    5,    2,
-        2,    1,    6,    2,    2,    2,    7,    0
+        0,    0,   10,    9,    3,    5,    6,    1,    6,    2,
+        2,    4,    1,    7,    2,    2,    2,    8,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -404,32 +404,32 @@ static const YY_CHAR yy_meta[13] =
         2,    2
     } ;
 
-static const flex_int16_t yy_base[20] =
+static const flex_int16_t yy_base[21] =
     {   0,
-        0,    0,   20,   21,   21,   21,   21,   13,   10,    0,
-        5,   10,   21,    0,    5,    9,   21,   21,   11
+        0,    0,   22,   23,   19,   23,   23,   14,   11,    0,
+        6,   15,   10,   23,    0,    5,    9,   23,   23,   11
     } ;
 
-static const flex_int16_t yy_def[20] =
+static const flex_int16_t yy_def[21] =
     {   0,
-       18,    1,   18,   18,   18,   18,   18,   18,   18,   19,
-       19,   18,   18,   19,   19,   19,   18,    0,   18
+       19,    1,   19,   19,   19,   19,   19,   19,   19,   20,
+       20,   19,   19,   19,   20,   20,   20,   19,    0,   19
     } ;
 
-static const flex_int16_t yy_nxt[34] =
+static const flex_int16_t yy_nxt[36] =
     {   0,
         4,    5,    6,    7,    4,    8,    9,    7,   10,   10,
-       11,   10,   14,   17,   16,   12,   15,   13,   12,   18,
-        3,   18,   18,   18,   18,   18,   18,   18,   18,   18,
-       18,   18,   18
+       11,   10,   15,   18,   17,   13,   12,   16,   14,   13,
+       12,   19,    3,   19,   19,   19,   19,   19,   19,   19,
+       19,   19,   19,   19,   19
     } ;
 
-static const flex_int16_t yy_chk[34] =
+static const flex_int16_t yy_chk[36] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,   19,   16,   15,   12,   11,    9,    8,    3,
-       18,   18,   18,   18,   18,   18,   18,   18,   18,   18,
-       18,   18,   18
+        1,    1,   20,   17,   16,   13,   12,   11,    9,    8,
+        5,    3,   19,   19,   19,   19,   19,   19,   19,   19,
+       19,   19,   19,   19,   19
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -446,28 +446,39 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "code.l"
-#line 2 "code.l"
+#line 1 "180101097.l"
+#line 2 "180101097.l"
 
 #include <stdlib.h>
 #include <stdio.h>
-char arr[50][10];
+
+// array to store index as code keys and tokens as values
+char arr[50][50];
+
+// used to keep track of line number
 int line_no = 1;
+
+// pointer to output file
 FILE* out;
 
+// creating node structure for inserting in hash table
 struct Node {
-	char lexeme[10];
+	char lexeme[50];
 	struct Node* next;
 };
 
+// hash table to store the lexemes of int and id
 struct Node* table[25];
 
+// some function prototypes
 void insert(int index, char* l);
+void install_id(char* l);
+void install_num(char* l);
 
-#line 468 "lex.yy.c"
+#line 479 "lex.yy.c"
 /* regular expressions */
 /* rules */
-#line 471 "lex.yy.c"
+#line 482 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -684,10 +695,10 @@ YY_DECL
 		}
 
 	{
-#line 35 "code.l"
+#line 46 "180101097.l"
 
 
-#line 691 "lex.yy.c"
+#line 702 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -714,13 +725,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 19 )
+				if ( yy_current_state >= 20 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 21 );
+		while ( yy_base[yy_current_state] != 23 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -746,91 +757,120 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 37 "code.l"
+#line 48 "180101097.l"
 {
+					// storing line number in output.txt
 					fprintf(out, "%d\t", line_no);
+					
 					// NUMBER FOUND
 					fprintf(out, "%d\t#%d\n", 23, atoi(yytext));
-					insert(23, yytext);
+					
+					// inserting lexeme in hash table
+					install_num(yytext);
 				}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 43 "code.l"
+#line 58 "180101097.l"
 {
+					// storing line number in output.txt
 					fprintf(out, "%d\t", line_no);
 					
+					// finding the code for the current token					
 					int found = 0;
-					for(int i = 1; i < 50; i++){
-						if(strcmp(arr[i], yytext) == 0){
+					for(int i = 1; i < 50; i++)
+					{
+						if(strcmp(arr[i], yytext) == 0)
+						{	
 							// TOKEN FOUND
+							// storing code for token in output.txt
 							fprintf(out, "%d\n", i);
 							found = 1;
 						}
 					}
-					if(!found){
+					if(!found)
+					{
 						// IDENTIFIER FOUND
 						fprintf(out, "%d\t^%s\n", 22, yytext);
-						insert(22, yytext);
+						
+						// inserting lexeme in hash table
+						install_id(yytext);
 					}
 				}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 60 "code.l"
+#line 83 "180101097.l"
 {	
 				}
 	YY_BREAK
 case 4:
-/* rule 4 can match eol */
 YY_RULE_SETUP
-#line 62 "code.l"
+#line 85 "180101097.l"
 {
-					line_no++;
 				}
 	YY_BREAK
 case 5:
+/* rule 5 can match eol */
 YY_RULE_SETUP
-#line 65 "code.l"
+#line 87 "180101097.l"
 {
+					// increasing line number on finding '\n'
+					line_no++;
+				}
+	YY_BREAK
+case 6:
+YY_RULE_SETUP
+#line 91 "180101097.l"
+{
+					// storing line number in output.txt
 					fprintf(out, "%d\t", line_no);
 					
 					int found = 0;
-					for(int i = 1; i < 50; i++){
-						if(strcmp(arr[i], yytext) == 0){
+					
+					// finding the code for the current token
+					for(int i = 1; i < 50; i++)
+					{
+						if(strcmp(arr[i], yytext) == 0)
+						{
 							// TOKEN FOUND
+							// storing code for token in output.txt
 							fprintf(out, "%d\n", i);
 							found = 1;
 						}
 					}
 				}
 	YY_BREAK
-case 6:
-YY_RULE_SETUP
-#line 77 "code.l"
-{
-					fprintf(out, "%d\t", line_no);
-					
-					// TOKEN FOUND
-					fprintf(out, "%d\n", 15);
-				}
-	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 83 "code.l"
-{	
+#line 109 "180101097.l"
+{
+					// storing line number in output.txt
 					fprintf(out, "%d\t", line_no);
 					
 					// TOKEN FOUND
-					fprintf(out, "%d\n", 5);	
+					// storing code for token in output.txt
+					fprintf(out, "%d\n", 15);
 				}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 90 "code.l"
+#line 117 "180101097.l"
+{	
+					// storing line number in output.txt
+					fprintf(out, "%d\t", line_no);
+					
+					// TOKEN FOUND
+					// storing code for token in output.txt
+					fprintf(out, "%d\n", 5);	
+				}
+	YY_BREAK
+case 9:
+YY_RULE_SETUP
+#line 126 "180101097.l"
 ECHO;
 	YY_BREAK
-#line 834 "lex.yy.c"
+#line 874 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1127,7 +1167,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 19 )
+			if ( yy_current_state >= 20 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1155,11 +1195,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 19 )
+		if ( yy_current_state >= 20 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 18);
+	yy_is_jam = (yy_current_state == 19);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1835,7 +1875,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 90 "code.l"
+#line 126 "180101097.l"
 
 
 /* auxillary functions */
@@ -1844,56 +1884,20 @@ int yywrap(){
 	return 1;
 }
 
-void generate_token_table()
-{	
-	FILE* fp1 = fopen("tokens.txt", "r");	
-	if(fp1 == NULL){
-		return;
-	} 
-	char temp[10];
-	for(int i = 0; i < 10; i++){
-		temp[i] = '\0';
-	}
-	int temp_idx = 0, idx = 0, f = 0;
-	char c;
-	
-	while((c = fgetc(fp1)) != EOF) 
-	{
-		if(c == ' '){ 
-			f = 1;
-		} 
-		else if(c == '\n'){
-			strcpy(arr[idx], temp);
-			for(int i = 0; i < 10; i++){
-				temp[i] = '\0';
-			}
-			idx = 0;
-			temp_idx = 0;
-			f = 0;
-		}
-		else {
-			if(f){
-				idx = idx*10 + c - '0';
-			}
-			else {
-				temp[temp_idx] = c;
-				temp_idx++; 
-			}
-		} 
-	} 
-	fclose(fp1);
-}
-
-struct Node* newnode(){
+// creating new node and returning a pointer to it
+struct Node* newnode()
+{
 	struct Node* curr = (struct Node*)malloc(sizeof(struct Node));
 	curr->next = NULL;
-	for(int i = 0; i < 10; i++){
+	for(int i = 0; i < 50; i++){
 		curr->lexeme[i] = '\0';
 	}
 	return curr;
 }
 
-void insert(int index, char* l){
+// inserting in hashtable using code as hashkey
+void insert(int index, char* l)
+{
 	struct Node* curr = table[index];
 	if(curr == NULL){
 		table[index] = newnode();
@@ -1913,22 +1917,79 @@ void insert(int index, char* l){
 	}
 }
 
-void preprocess(){
+// inserting number lexeme in hash table
+void install_num(char* l){
+	insert(23, l);
+}
+
+// inserting identifier lexeme in hash table
+void install_id(char* l){
+	insert(22, l);
+}
+
+// generating tokens in arr using code as index value through file tokens.txt
+void generate_token_table()
+{	
+	FILE* fp1 = fopen("tokens.txt", "r");	
+	if(fp1 == NULL){
+		return;
+	} 
+	char temp[50];
+	for(int i = 0; i < 50; i++){
+		temp[i] = '\0';
+	}
+	int temp_idx = 0, idx = 0, f = 0;
+	char c;
+	
+	while((c = fgetc(fp1)) != EOF) 
+	{
+		if(c == ' '){ 
+			f = 1;
+		} 
+		else if(c == '\n'){
+			strcpy(arr[idx], temp);
+			for(int i = 0; i < 50; i++){
+				temp[i] = '\0';
+			}
+			idx = 0;
+			temp_idx = 0;
+			f = 0;
+		}
+		else {
+			if(f){
+				idx = idx*10 + c - '0';
+			}
+			else {
+				temp[temp_idx] = c;
+				temp_idx++; 
+			}
+		} 
+	} 
+	fclose(fp1);
+}
+
+// doing some preprocess work 
+void preprocess()
+{
 	out = fopen("output.txt", "w");
 	for(int i = 0; i < 25; i++){
 		table[i] = NULL;
 	}
 }
 
-void print_table(){
-	for(int i = 0; i < 25; i++){
-		printf("%d: ", i);
+// printing the hash table
+void print_hash_table()
+{
+	FILE* hout = fopen("hash_table.txt", "w");
+	for(int i = 0; i < 25; i++)
+	{
+		fprintf(hout, "%d: ", i);
 		struct Node* curr = table[i];
 		while(curr != NULL){
-			printf("%s ", curr->lexeme);
+			fprintf(hout, "%s ", curr->lexeme);
 			curr = curr->next;
 		}
-		printf("\n");
+		fprintf(hout, "\n");
 	}
 }
 
@@ -1944,7 +2005,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	yylex();
-	print_table();
+	print_hash_table();
 	return 0;
 }
 

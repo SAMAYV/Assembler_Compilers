@@ -2,7 +2,7 @@
 - Roll Number: 180101097
 - CS348 Assignment03
 
-- tokens.txt contains all the tokens along with their codes.
+- tokens.txt contains all the tokens along with their code values.
 - input.txt contains the input PASCAL program.
 
 # Instructions for running the code:
@@ -16,8 +16,7 @@
 	- Now run a.out by taking the file name input.txt as command line argument using the following command:
 		./a.out input.txt
 
-	- It will generate output.txt.
+	- It will generate output.txt and hash_table.txt.
 
-- output.txt contains the tokens for each line in output.txt in the following format:
-<line_number> <code_for_the_token_in_the_program> <lexeme>
-
+- output.txt contains in each line the following values in output.txt: <line_number> <token_type> <token_specifier>
+- hash_table.txt contains the lexemes of integer and identifiers using the hash function as code values.
